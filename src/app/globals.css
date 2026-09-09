@@ -1,26 +1,38 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.individuals-ramp-main {
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
+.ramp-widget-card {
+  width: 100%;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(13, 27, 42, 0.08);
+  border-bottom: 1px solid rgba(13, 27, 42, 0.08);
+  background: #fff;
+  padding: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .individuals-ramp-main {
+    padding: 6rem 1rem;
+  }
+
+  .ramp-widget-card {
+    width: 100%;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(13, 27, 42, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(22, 34, 51, 0.08);
+  }
 }

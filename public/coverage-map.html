@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KailoPay Indonesia coverage map</title>
+<script src="/vendor/d3.min.js"></script>
+<script src="/vendor/topojson-client.min.js"></script>
+<style>
+  html,body{margin:0;height:100%;background:#F1F1EE;overflow:hidden}
+  #map{width:100%;height:100%}
+  svg{display:block;width:100%;height:100%}
+  .lbl{font:600 9px/1 Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;fill:#5B5FA6;paint-order:stroke;stroke:#F1F1EE;stroke-width:2.5px;stroke-linejoin:round}
+  .lbl-sm{font-size:8px;letter-spacing:.08em;fill:#6E72AE}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+var LIVE = ["Indonesia"];
+var TARGET = [];
+var LABEL = {
+  "Indonesia": { x: 0, y: -18, text: "Indonesia" }
+};
+var CAPITALS = [
+  [106.8456, -6.2088],  // Jakarta
+  [112.7521, -7.2575],  // Surabaya
+  [110.4203, -7.7956],  // Yogyakarta
+  [106.8167, -6.2000],  // Jabodetabek
+  [115.2126, -8.6705],  // Bali
+  [98.6722, 3.5952],    // Medan
+  [119.4327, -5.1477],  // Makassar
+  [106.1100, -6.1200],  // Bandung
+  [101.4478, 0.5071],   // Pekanbaru
+  [114.5901, -3.3194]   // Banjarmasin
+];
+
+d3.json("/vendor/countries-110m.json").then(function (topo) {
+  var countries = topojson.feature(topo, topo.objects.countries).features;
+  var el = document.getElementById("map");
+  var w = el.clientWidth || 1200, h = el.clientHeight || 460;
+
+  var svg = d3.select("#map").append("svg").attr("viewBox", "0 0 " + w + " " + h);
+  var projection = d3.geoMercator();
+  var frame = { type: "Polygon", coordinates: [[[94, 8], [142, 8], [142, -12], [94, -12], [94, 8]]] };
+  projection.fitSize([w, h], frame);
+  var path = d3.geoPath(projection);
+
+  var isLive = function (n) { return LIVE.indexOf(n) > -1; };
+  var isTarget = function (n) { return TARGET.indexOf(n) > -1; };
+
+  var g = svg.append("g");
+
+  g.selectAll("path.base").data(countries).join("path")
+    .attr("class", "base").attr("d", path)
+    .attr("fill", "#E3E3DD").attr("stroke", "#F1F1EE").attr("stroke-width", 0.6);
+
+  g.selectAll("path.target").data(countries.filter(function (d) { return isTarget(d.properties.name); })).join("path")
+    .attr("class", "target").attr("d", path)
+    .attr("fill", "#C5C8FD").attr("stroke", "#8C92F8").attr("stroke-width", 1)
+    .attr("stroke-dasharray", "3 3");
+
+  g.selectAll("path.live").data(countries.filter(function (d) { return isLive(d.properties.name); })).join("path")
+    .attr("class", "live").attr("d", path)
+    .attr("fill", "#4F5DFB").attr("stroke", "#2F3BC9").attr("stroke-width", 1.4);
+
+  g.selectAll("text.lbl").data(countries.filter(function (d) { return isLive(d.properties.name); })).join("text")
+    .attr("class", "lbl")
+    .attr("transform", function (d) {
+      var c = path.centroid(d);
+      var offset = LABEL[d.properties.name] || { x: 0, y: 0 };
+      return "translate(" + (c[0] + offset.x) + "," + (c[1] + offset.y) + ")";
+    })
+    .attr("text-anchor", "middle")
+    .text(function (d) {
+      var label = LABEL[d.properties.name];
+      return label && label.text ? label.text : d.properties.name;
+    });
+
+  var tour = g.append("g");
+  var pulse = tour.append("circle").attr("r", 6).attr("fill", "none")
+    .attr("stroke", "#4F5DFB").attr("stroke-width", 1.5).attr("opacity", 0);
+  var halo = tour.append("circle").attr("r", 15).attr("fill", "#4F5DFB").attr("opacity", 0.14);
+  tour.append("circle").attr("r", 6.5).attr("fill", "#4F5DFB")
+    .attr("stroke", "#F1F1EE").attr("stroke-width", 2.5);
+
+  var at = function (i) { return projection(CAPITALS[i % CAPITALS.length]); };
+  var start = at(0);
+  tour.attr("transform", "translate(" + start[0] + "," + start[1] + ")");
+
+  var step = 1;
+  function hop() {
+    var p = at(step);
+    tour.transition().duration(1500).ease(d3.easeCubicInOut)
+      .attr("transform", "translate(" + p[0] + "," + p[1] + ")")
+      .on("end", function () {
+        pulse.attr("r", 6).attr("opacity", 0.55).transition().duration(1000)
+          .ease(d3.easeCubicOut).attr("r", 26).attr("opacity", 0);
+        halo.transition().duration(300).attr("opacity", 0.26)
+          .transition().duration(600).attr("opacity", 0.14);
+        step += 1;
+        setTimeout(hop, 750);
+      });
+  }
+  if (!window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches) hop();
+});
+</script>
+</body>
+</html>

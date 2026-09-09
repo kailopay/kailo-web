@@ -1,0 +1,1 @@
+import{_ as o}from"./_plugin-vue_export-helper.c27b6911.js";import{c as s,l as c,o as r}from"./entry.b4a0f580.js";const t={},n={id:"page",class:"flex flex-col min-h-screen"};function a(e,l){return r(),s("div",n,[c(e.$slots,"default")])}const d=o(t,[["render",a]]);export{d as default};

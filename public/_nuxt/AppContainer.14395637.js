@@ -1,0 +1,1 @@
+import{o as e,j as n,w as o,l as s,k as l,D as p}from"./entry.b4a0f580.js";const r={__name:"AppContainer",props:{padding:{type:Boolean,default:!0},tag:{type:String,default:"section"}},setup(a){return(t,c)=>(e(),n(p(a.tag),{class:l(["mx-auto w-full max-w-[1440px]",{"px-6 sm:px-14":a.padding}])},{default:o(()=>[s(t.$slots,"default")]),_:3},8,["class"]))}},u=r;export{u as _};
