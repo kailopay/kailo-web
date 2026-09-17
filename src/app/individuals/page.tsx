@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { IndividualsPage } from "@/components/individuals/individuals-page";
 import { BRAND_NAME } from "@/content/landing";
 
-const pageTitle = `Buy and Sell XLM & USDC | ${BRAND_NAME}`;
+const pageTitle = `Buy and Sell XLM | ${BRAND_NAME}`;
 const pageDescription =
-  "Buy and sell XLM and USDC with IDR on Stellar. Get a live quote before you continue.";
+  "Buy and sell XLM with IDR on Stellar testnet. Live quote before you continue.";
 
 export const metadata: Metadata = {
   title: pageTitle,
