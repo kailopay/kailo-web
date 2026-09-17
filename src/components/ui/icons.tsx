@@ -1,3 +1,26 @@
+export function BackIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      role="img"
+      className={className}
+      width="1.25em"
+      height="1.25em"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <path
+        d="M15 6l-6 6 6 6"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function ChevronDownIcon({ className }: { className?: string }) {
   return (
     <svg
