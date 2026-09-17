@@ -21,6 +21,522 @@ body {
   padding: 1.25rem;
 }
 
+.ramp-error-message {
+  margin-top: 1rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #dc2626;
+}
+
+.ramp-mono-break {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  color: #0d1b2a;
+}
+
+.primary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  margin: 0;
+  border-radius: 9999px;
+  border: 1px solid rgba(13, 27, 42, 0.12);
+  background: #fff;
+  font-weight: 600;
+  color: #0d1b2a;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.secondary-button--md {
+  padding: 0.875rem 1rem;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.secondary-button--lg {
+  padding: 1rem 1rem;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.secondary-button--full {
+  width: 100%;
+}
+
+.secondary-button img {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.secondary-button:hover:not(:disabled):not(.secondary-button--disabled) {
+  background: #f7f7f5;
+  border-color: rgba(13, 27, 42, 0.22);
+}
+
+.secondary-button:disabled,
+.secondary-button--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ramp-step-header {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.ramp-step-header__side {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.ramp-step-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: #0d1b2a;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ramp-step-header__back:hover {
+  background: rgba(13, 27, 42, 0.06);
+}
+
+.ramp-step-header__title {
+  margin: 0;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #0d1b2a;
+}
+
+.ramp-step-header__title--animate {
+  animation: ramp-view-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ramp-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  padding: 0.75rem 1rem;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #0d1b2a;
+  background: #fff;
+  outline: none;
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.ramp-input::placeholder {
+  color: #8b98a9;
+}
+
+.ramp-input:hover {
+  border-color: rgba(13, 27, 42, 0.14);
+}
+
+.ramp-input:focus,
+.ramp-input:focus-visible {
+  border-color: #5b5ef4;
+  box-shadow: 0 0 0 3px rgba(91, 94, 244, 0.14);
+  outline: none;
+}
+
+.ramp-bank-select {
+  position: relative;
+}
+
+.ramp-bank-select__trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  background: #fff;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.ramp-bank-select__trigger:hover {
+  border-color: rgba(13, 27, 42, 0.14);
+}
+
+.ramp-bank-select__trigger.is-open,
+.ramp-bank-select__trigger:focus-visible {
+  border-color: #5b5ef4;
+  box-shadow: 0 0 0 3px rgba(91, 94, 244, 0.14);
+  outline: none;
+}
+
+.ramp-bank-select__value {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.ramp-bank-select__logo {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.ramp-bank-select__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0d1b2a;
+}
+
+.ramp-bank-select__chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: #5a6675;
+  transition: transform 0.22s ease;
+}
+
+.ramp-bank-select__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.ramp-bank-select__menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.375rem);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(22, 34, 51, 0.12);
+  animation: ramp-view-enter 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ramp-bank-select__option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ramp-bank-select__option:hover {
+  background: #f7f7f5;
+}
+
+.ramp-bank-select__option.is-selected {
+  background: rgba(91, 94, 244, 0.08);
+}
+
+.ramp-auth-tabs {
+  position: relative;
+  display: inline-flex;
+  border-radius: 9999px;
+  background: #f1f1ee;
+  padding: 0.25rem;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ramp-auth-tabs__indicator {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(22, 34, 51, 0.08);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.ramp-auth-tabs__indicator.is-register {
+  transform: translateX(100%);
+}
+
+.ramp-auth-tabs__button {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 5.5rem;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  padding: 0.375rem 1rem;
+  font: inherit;
+  color: #5a6675;
+  cursor: pointer;
+  transition: color 0.22s ease;
+}
+
+.ramp-auth-tabs__button.is-active {
+  color: #0d1b2a;
+}
+
+.ramp-auth-tabs__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ramp-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f7f7f5;
+}
+
+.google-auth-popup-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #fff;
+}
+
+.google-auth-popup-screen__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #5a6675;
+  text-align: center;
+}
+
+@keyframes ramp-view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ramp-view-transition {
+  animation: ramp-view-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ramp-step-header__title--animate,
+  .ramp-view-transition,
+  .ramp-step-loading__spinner {
+    animation: none;
+  }
+
+  .ramp-input,
+  .ramp-auth-tabs__indicator,
+  .ramp-auth-tabs__button,
+  .primary-button,
+  .secondary-button,
+  .ramp-payment-method,
+  .ramp-offramp-progress__dot,
+  .ramp-bank-select__trigger,
+  .ramp-bank-select__chevron,
+  .ramp-bank-select__menu,
+  .ramp-bank-select__option {
+    transition: none;
+    animation: none;
+  }
+}
+
+.ramp-fee-details-panel {
+  display: grid;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.ramp-fee-details-panel.is-closed {
+  grid-template-rows: 0fr;
+}
+
+.ramp-fee-details-panel.is-open {
+  grid-template-rows: 1fr;
+}
+
+.ramp-fee-details-panel__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ramp-step-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem 0;
+}
+
+.ramp-step-loading__spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 2px solid rgba(91, 94, 244, 0.2);
+  border-top-color: #5b5ef4;
+  animation: ramp-spin 0.7s linear infinite;
+}
+
+.ramp-step-loading__message {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5a6675;
+}
+
+@keyframes ramp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ramp-payment-method {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  background: #fff;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.ramp-payment-method:hover {
+  border-color: rgba(13, 27, 42, 0.14);
+}
+
+.ramp-payment-method.is-selected {
+  border-color: #5b5ef4;
+  box-shadow: 0 0 0 3px rgba(91, 94, 244, 0.12);
+}
+
+.ramp-deposit-instructions {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  padding: 1rem;
+}
+
+.ramp-deposit-instructions--error {
+  border-color: rgba(220, 38, 38, 0.2);
+  background: rgba(254, 242, 242, 0.5);
+}
+
+.ramp-offramp-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ramp-offramp-progress__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  text-align: center;
+}
+
+.ramp-offramp-progress__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  background: rgba(13, 27, 42, 0.12);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.ramp-offramp-progress__label {
+  font-size: 10px;
+  line-height: 1.3;
+  color: #8b98a9;
+}
+
+.ramp-offramp-progress__step.is-done .ramp-offramp-progress__dot {
+  background: #5b5ef4;
+}
+
+.ramp-offramp-progress__step.is-done .ramp-offramp-progress__label {
+  color: #0d1b2a;
+}
+
+.ramp-offramp-progress__step.is-current .ramp-offramp-progress__dot {
+  background: #5b5ef4;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(91, 94, 244, 0.16);
+}
+
+.ramp-offramp-progress__step.is-current .ramp-offramp-progress__label {
+  color: #0d1b2a;
+  font-weight: 600;
+}
+
+.ramp-offramp-progress__step.is-failed .ramp-offramp-progress__dot {
+  background: #dc2626;
+}
+
+.ramp-offramp-progress__step.is-failed .ramp-offramp-progress__label {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 @media (min-width: 768px) {
   .individuals-ramp-main {
     padding: 6rem 1rem;
@@ -34,5 +550,99 @@ body {
     border: 1px solid rgba(13, 27, 42, 0.08);
     border-radius: 18px;
     box-shadow: 0 8px 24px rgba(22, 34, 51, 0.08);
+  }
+}
+
+.persona-inline-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(13, 27, 42, 0.08);
+  background: #fff;
+}
+
+.persona-inline-container {
+  position: relative;
+  z-index: 1;
+  min-height: 520px;
+  background: #fff;
+}
+
+.persona-inline-container--ready {
+  min-height: 650px;
+}
+
+.persona-inline-container iframe,
+.persona-inline-iframe {
+  display: block;
+  width: 100% !important;
+  min-height: 650px;
+  border: 0;
+  background: #fff;
+}
+
+/* Persona.Client mounts an overlay wrapper; keep it in-flow inside the ramp card. */
+.persona-inline-container .persona-widget__overlay {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-height: 650px;
+  background: #fff !important;
+  display: block !important;
+}
+
+.persona-inline-container .persona-widget__iframe {
+  display: block;
+  width: 100% !important;
+  min-height: 650px;
+  border: 0;
+  background: #fff;
+}
+
+.persona-inline-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 520px;
+  background: #fff;
+}
+
+.persona-inline-loading-shimmer {
+  flex: 1;
+  min-height: 520px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.65) 100%),
+    linear-gradient(
+      90deg,
+      #f7f7f5 0%,
+      #f1f1ee 20%,
+      #fafaf8 40%,
+      #f1f1ee 60%,
+      #f7f7f5 100%
+    );
+  background-size: 100% 100%, 220% 100%;
+  animation: persona-inline-shimmer 1.4s ease-in-out infinite;
+}
+
+.persona-inline-loading-label {
+  margin: 0;
+  padding: 1rem 1.25rem 1.25rem;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  background: #fff;
+}
+
+@keyframes persona-inline-shimmer {
+  0% {
+    background-position: 0 0, 200% 0;
+  }
+
+  100% {
+    background-position: 0 0, -200% 0;
   }
 }
