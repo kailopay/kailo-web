@@ -150,17 +150,31 @@ export function AuthStep({
 
     googlePopupPollRef.current = setInterval(() => {
       const activePopup = googlePopupRef.current;
-      if (!activePopup || !activePopup.closed) return;
+      if (!activePopup) return;
+
+      if (activePopup.closed) {
+        void getMe()
+          .then((session) => {
+            if (googleAuthResolvedRef.current) return;
+            void finishGoogleLogin(session.email_verified);
+          })
+          .catch(() => {
+            if (!googleAuthResolvedRef.current) {
+              void finishGoogleLogin(false);
+            }
+          });
+        return;
+      }
 
       void getMe()
         .then((session) => {
           if (googleAuthResolvedRef.current) return;
-          void finishGoogleLogin(session.email_verified);
+          if (!session.email_verified) return;
+          activePopup.close();
+          void finishGoogleLogin(true);
         })
         .catch(() => {
-          if (!googleAuthResolvedRef.current) {
-            void finishGoogleLogin(false);
-          }
+          // Session not ready yet; keep polling until the popup closes.
         });
     }, 400);
   }

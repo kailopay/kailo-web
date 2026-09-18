@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 
+import { GoogleAuthPopupRoot } from "@/components/auth/google-auth-popup-root";
 import { BRAND_NAME } from "@/content/landing";
 
 import "./globals.css";
@@ -77,7 +78,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
       </head>
-      <body>{children}</body>
+      <body>
+        <GoogleAuthPopupRoot>{children}</GoogleAuthPopupRoot>
+      </body>
     </html>
   );
 }

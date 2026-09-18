@@ -1,4 +1,5 @@
 export const GOOGLE_AUTH_POPUP_MESSAGE = "kailopay:google-auth-complete";
+export const GOOGLE_AUTH_POPUP_NAME = "kailopay-google-auth";
 
 export type GoogleAuthPopupMessage = {
   type: typeof GOOGLE_AUTH_POPUP_MESSAGE;
@@ -7,6 +8,12 @@ export type GoogleAuthPopupMessage = {
 
 const POPUP_WIDTH = 480;
 const POPUP_HEIGHT = 640;
+
+export function isGoogleAuthPopupWindow(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.name === GOOGLE_AUTH_POPUP_NAME) return true;
+  return window.opener !== null && !window.opener.closed;
+}
 
 export function openGoogleLoginPopup(): Window | null {
   const dualScreenLeft = window.screenLeft ?? window.screenX;
@@ -18,7 +25,7 @@ export function openGoogleLoginPopup(): Window | null {
 
   return window.open(
     "/auth/google/login",
-    "kailopay-google-auth",
+    GOOGLE_AUTH_POPUP_NAME,
     [
       `width=${POPUP_WIDTH}`,
       `height=${POPUP_HEIGHT}`,

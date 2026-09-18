@@ -3,18 +3,23 @@
 import { useEffect, useState } from "react";
 
 import { getMe } from "@/lib/kailopay/auth";
-import { notifyGoogleAuthOpener } from "@/lib/kailopay/google-auth-popup";
+import {
+  isGoogleAuthPopupWindow,
+  notifyGoogleAuthOpener,
+} from "@/lib/kailopay/google-auth-popup";
 
 type GoogleAuthPopupHandlerProps = {
   children: React.ReactNode;
 };
 
 export function GoogleAuthPopupHandler({ children }: GoogleAuthPopupHandlerProps) {
-  const [isPopupFlow, setIsPopupFlow] = useState(false);
+  const [isPopupFlow, setIsPopupFlow] = useState(
+    () => typeof window !== "undefined" && isGoogleAuthPopupWindow(),
+  );
   const [popupError, setPopupError] = useState(false);
 
   useEffect(() => {
-    if (!window.opener || window.opener.closed) return;
+    if (!isGoogleAuthPopupWindow()) return;
 
     setIsPopupFlow(true);
     let cancelled = false;

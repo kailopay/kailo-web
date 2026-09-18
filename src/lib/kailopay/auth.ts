@@ -65,7 +65,11 @@ export async function resetPassword(token: string, newPassword: string): Promise
   });
 }
 
-export { openGoogleLoginPopup, GOOGLE_AUTH_POPUP_MESSAGE } from "./google-auth-popup";
+export {
+  GOOGLE_AUTH_POPUP_MESSAGE,
+  isGoogleAuthPopupWindow,
+  openGoogleLoginPopup,
+} from "./google-auth-popup";
 
 export async function isGoogleLoginAvailable(): Promise<boolean> {
   try {
