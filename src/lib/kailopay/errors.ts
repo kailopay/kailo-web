@@ -23,6 +23,18 @@ export function apiErrorMessage(
 }
 
 export function authErrorMessage(error: KailopayError): string {
+  if (error.status === 401) {
+    const message = error.message.trim();
+    if (
+      message &&
+      message !== "Unauthorized" &&
+      message !== "authentication failed" &&
+      message !== "Request failed"
+    ) {
+      return message;
+    }
+    return "Your session could not be established. Sign in again.";
+  }
   return apiErrorMessage(error);
 }
 
@@ -91,7 +103,7 @@ export function kycErrorMessage(error: KailopayError): string {
       if (error.details?.includes("409") || error.details?.includes("resource_state_conflict")) {
         return "Your verification was already submitted. We are confirming it with KailoPay.";
       }
-      return "Identity verification is temporarily unavailable on KailoPay API. Try again shortly.";
+      return "Identity verification is temporarily unavailable on API. Try again shortly.";
     case "KYC_INQUIRY_NOT_FOUND":
       return "KailoPay could not find your verification inquiry. Ask support to reset KYC for your account.";
     case "MALFORMED_RESPONSE":

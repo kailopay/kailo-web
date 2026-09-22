@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
 
-import { GoogleAuthPopupRoot } from "@/components/auth/google-auth-popup-root";
 import { BRAND_NAME } from "@/content/landing";
-
-import "./globals.css";
-import "./marketing/styles.css";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
-  display: "swap",
-});
 
 const pageTitle = `IDR On-Ramp and Off-Ramp for Stellar | ${BRAND_NAME}`;
 const pageDescription =
@@ -64,7 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={archivo.variable}>
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -78,9 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
       </head>
-      <body>
-        <GoogleAuthPopupRoot>{children}</GoogleAuthPopupRoot>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

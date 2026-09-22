@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
-  EARLY_ACCESS_URL,
   audienceTabs,
   mainNavDropdowns,
   mainNavLinks,
@@ -102,12 +101,12 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-6 sm:flex">
+        <div className="ml-auto hidden items-center gap-5 sm:flex">
           <div className="text-sm font-medium">
             <NavDropdownMenu dropdown={resourcesDropdown} />
           </div>
-          <MarketingButton href={EARLY_ACCESS_URL} external>
-            Book a demo
+          <MarketingButton href="/register?next=/dashboard">
+            Get Started
           </MarketingButton>
         </div>
 
@@ -166,11 +165,10 @@ export function SiteHeader() {
           />
 
           <MarketingButton
-            href={EARLY_ACCESS_URL}
-            external
+            href="/register?next=/dashboard"
             className="mt-2 h-11 w-full justify-center"
           >
-            Book a demo
+            Get Started
           </MarketingButton>
         </nav>
       )}

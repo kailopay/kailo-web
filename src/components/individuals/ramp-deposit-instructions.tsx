@@ -1,6 +1,8 @@
 "use client";
 
+import { buildStellarPaymentUri } from "@/lib/kailopay/stellar-payment-uri";
 import { RampCopyButton } from "./ramp-copy-button";
+import { RampPaymentQr } from "./ramp-payment-qr";
 
 type RampDepositInstructionsProps = {
   amount: string;
@@ -38,34 +40,37 @@ export function RampDepositInstructions({
     );
   }
 
+  const paymentUri = buildStellarPaymentUri({ destination: account, amount, memo });
+
   return (
     <div className="ramp-deposit-instructions">
-      <p className="text-[13px] font-medium text-ink">Send exactly this amount</p>
-      <p className="mt-2 font-mono text-[15px] font-semibold text-ink">{amount} XLM</p>
-      <RampCopyButton value={amount} label="amount" className="mt-1" />
+      <RampPaymentQr value={paymentUri} />
 
-      <p className="mt-4 text-[13px] text-ink-body">To this Stellar address</p>
-      <p className="ramp-mono-break mt-1 text-[12px]">{account}</p>
-      <RampCopyButton value={account} label="address" className="mt-1" />
+      <p className="mt-4 text-center text-[13px] font-medium text-ink">
+        Send exactly <span className="font-mono">{amount} XLM</span>
+      </p>
 
-      {memo && (
-        <>
-          <p className="mt-4 text-[13px] font-medium text-ink">Memo (required)</p>
-          <p className="mt-1 font-mono text-[12px] text-ink">{memo}</p>
-          <RampCopyButton value={memo} label="memo" className="mt-1" />
-        </>
-      )}
+      <div className="mt-4 space-y-3">
+        <div>
+          <p className="text-[12px] text-ink-muted">Deposit address</p>
+          <p className="ramp-mono-break mt-1 text-[12px] text-ink">{account}</p>
+          <RampCopyButton value={account} label="address" className="mt-1" />
+        </div>
 
-      {expiresAt && (
-        <p className="mt-4 text-[12px] text-ink-muted">
+        {memo ? (
+          <div>
+            <p className="text-[12px] font-medium text-ink">Memo (required)</p>
+            <p className="mt-1 font-mono text-[12px] text-ink">{memo}</p>
+            <RampCopyButton value={memo} label="memo" className="mt-1" />
+          </div>
+        ) : null}
+      </div>
+
+      {expiresAt ? (
+        <p className="mt-4 text-center text-[12px] text-ink-muted">
           Deposit before {formatExpiry(expiresAt)}
         </p>
-      )}
-
-      <p className="mt-3 text-[11px] leading-relaxed text-ink-muted">
-        Open your Stellar wallet, send the exact XLM amount, and include the memo. Wrong amount or
-        missing memo may mark the order as invalid.
-      </p>
+      ) : null}
     </div>
   );
 }

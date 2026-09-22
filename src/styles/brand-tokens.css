@@ -1,0 +1,6 @@
+/* Shared KailoPay brand colors (matches landing page `action` token). */
+:root {
+  --brand-primary: #5b5ef4;
+  --brand-primary-hover: #4a4de0;
+  --brand-primary-foreground: #ffffff;
+}

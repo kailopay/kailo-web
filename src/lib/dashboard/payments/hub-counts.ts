@@ -1,0 +1,60 @@
+import { count } from "drizzle-orm";
+import { db } from "@/lib/dashboard/db";
+import {
+  invoices,
+  paymentLinks,
+  payments,
+  type Organization,
+} from "@/lib/dashboard/db/schema";
+import type { PaymentsTab } from "@/constants/dashboard/navigation/payments-tabs";
+import { organizationEnvironmentWhere } from "@/lib/dashboard/organizations/environment-scope";
+
+export type PaymentsHubCounts = Record<PaymentsTab, number>;
+
+export async function getPaymentsHubCounts(
+  organizationId: string,
+  environment: Organization["environment"],
+): Promise<PaymentsHubCounts> {
+  const [paymentIntentsCount, invoicesCount, paymentLinksCount] =
+    await Promise.all([
+    db
+      .select({ count: count() })
+      .from(payments)
+      .where(
+        organizationEnvironmentWhere(
+          payments.organizationId,
+          payments.environment,
+          organizationId,
+          environment,
+        ),
+      ),
+    db
+      .select({ count: count() })
+      .from(invoices)
+      .where(
+        organizationEnvironmentWhere(
+          invoices.organizationId,
+          invoices.environment,
+          organizationId,
+          environment,
+        ),
+      ),
+    db
+      .select({ count: count() })
+      .from(paymentLinks)
+      .where(
+        organizationEnvironmentWhere(
+          paymentLinks.organizationId,
+          paymentLinks.environment,
+          organizationId,
+          environment,
+        ),
+      ),
+  ]);
+
+  return {
+    "payment-intents": paymentIntentsCount[0]?.count ?? 0,
+    invoices: invoicesCount[0]?.count ?? 0,
+    "payment-links": paymentLinksCount[0]?.count ?? 0,
+  };
+}

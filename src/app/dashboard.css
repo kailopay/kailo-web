@@ -1,0 +1,274 @@
+@import "@dub/tailwind-config/themes.css";
+@import "../styles/brand-tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: light only;
+}
+
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    /* Match landing page primary (`bg-action`) */
+    --primary: var(--brand-primary);
+    --primary-hover: var(--brand-primary-hover);
+    --primary-foreground: var(--brand-primary-foreground);
+
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: var(--primary);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: var(--primary);
+    --sandbox-banner: #0f3359;
+    --sandbox-banner-border: #0a2644;
+    --sandbox-banner-foreground: #ffffff;
+    --checkout-error-banner: #b42318;
+    --checkout-error-banner-border: #912018;
+    --checkout-error-banner-foreground: #ffffff;
+    --checkout-info-banner: #175cd3;
+    --checkout-info-banner-border: #1849a9;
+    --checkout-info-banner-foreground: #ffffff;
+  }
+
+  .dark {
+    --primary: var(--brand-primary);
+    --primary-hover: var(--brand-primary-hover);
+    --primary-foreground: var(--brand-primary-foreground);
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: var(--primary);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: var(--primary);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-sandbox-banner {
+    background-color: var(--sandbox-banner);
+  }
+
+  .text-sandbox-banner-foreground {
+    color: var(--sandbox-banner-foreground);
+  }
+
+  .border-sandbox-banner-border {
+    border-color: var(--sandbox-banner-border);
+  }
+
+  .bg-checkout-error-banner {
+    background-color: var(--checkout-error-banner);
+  }
+
+  .text-checkout-error-banner-foreground {
+    color: var(--checkout-error-banner-foreground);
+  }
+
+  .border-checkout-error-banner-border {
+    border-color: var(--checkout-error-banner-border);
+  }
+
+  .bg-checkout-info-banner {
+    background-color: var(--checkout-info-banner);
+  }
+
+  .text-checkout-info-banner-foreground {
+    color: var(--checkout-info-banner-foreground);
+  }
+
+  .border-checkout-info-banner-border {
+    border-color: var(--checkout-info-banner-border);
+  }
+
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-primary-foreground {
+    color: var(--primary-foreground);
+  }
+
+  .border-primary {
+    border-color: var(--primary);
+  }
+
+  .ring-primary {
+    --tw-ring-color: var(--primary);
+  }
+}
+
+.dub-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: #d1d5db #ffffff;
+}
+
+.dub-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dub-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dub-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 10px;
+}
+
+[data-sonner-toast] {
+  border-radius: 10px !important;
+}
+
+/* Stellar Wallets Kit Modal Overrides */
+.stellar-wallets-kit {
+  --swk-background: #ffffff !important;
+  --swk-background-secondary: #f8f8f8 !important;
+  --swk-foreground-strong: #000000 !important;
+  --swk-foreground: #161619 !important;
+  --swk-foreground-secondary: #2d2d31 !important;
+  --swk-primary: var(--primary) !important;
+  --swk-primary-foreground: var(--primary-foreground) !important;
+  --swk-border: rgba(0, 0, 0, 0.15) !important;
+  /*
+   * Radix modal dialogs set body { pointer-events: none } while open.
+   * Wallet Kit mounts on body and inherits that, so clicks pass through to
+   * the app modal underneath. Re-enable interaction on the kit overlay.
+   */
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+body > div:has(.stellar-wallets-kit) {
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Primary buttons — @dub/ui + shadcn dashboard button */
+button.border-primary.bg-primary.text-primary-foreground:not(:disabled),
+[data-slot="button"]:not(:disabled).bg-primary {
+  border-color: var(--primary) !important;
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+button.border-primary.bg-primary.text-primary-foreground:not(:disabled):hover,
+[data-slot="button"]:not(:disabled).bg-primary:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+button.border-primary.bg-primary.text-primary-foreground:not(:disabled):hover,
+button.border-primary.bg-primary:not(:disabled):hover {
+  --tw-ring-color: color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+
+/* Links / text actions using primary token */
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
+.ring-primary,
+.focus-visible\:ring-primary\/50:focus-visible {
+  --tw-ring-color: color-mix(in srgb, var(--primary) 50%, transparent) !important;
+}
+
+.hover\:bg-primary\/90:hover {
+  background-color: var(--primary-hover) !important;
+}
+
+.hover\:bg-primary\/80:hover {
+  background-color: color-mix(in srgb, var(--primary) 80%, white) !important;
+}
+
+.hover\:bg-primary\/15:hover {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+}
+
+.hover\:bg-primary\/10:hover {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+
+.hover\:bg-primary\/5:hover {
+  background-color: color-mix(in srgb, var(--primary) 5%, transparent) !important;
+}
+
+.bg-primary\/10 {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}
+
+.bg-primary\/15 {
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+}
+
+.bg-primary\/5 {
+  background-color: color-mix(in srgb, var(--primary) 5%, transparent) !important;
+}
+
+.text-primary\/50 {
+  color: color-mix(in srgb, var(--primary) 50%, transparent) !important;
+}

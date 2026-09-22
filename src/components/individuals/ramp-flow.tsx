@@ -56,6 +56,7 @@ export function RampFlow() {
   const [reconciliationNotice, setReconciliationNotice] = useState<string | null>(null);
   const [autoSubmitPayment, setAutoSubmitPayment] = useState(false);
   const [headerOverride, setHeaderOverride] = useState<RampHeaderConfig | null>(null);
+  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +128,7 @@ export function RampFlow() {
     clearPendingOrderId();
     setReconciliationNotice(null);
     setAutoSubmitPayment(false);
+    setCreatedOrder(null);
     setDraft(createDefaultDraft());
     setUser(null);
   }
@@ -142,6 +144,7 @@ export function RampFlow() {
   }, [goToStep]);
 
   function handleOrderCreated(order: Order) {
+    setCreatedOrder(order);
     patchDraft({ orderId: order.id, step: 6 });
   }
 
@@ -237,6 +240,7 @@ export function RampFlow() {
         {draft.step === 6 && draft.orderId && (
           <StatusStep
             orderId={draft.orderId}
+            initialOrder={createdOrder?.id === draft.orderId ? createdOrder : null}
             onNewTransaction={handleNewTransaction}
             onNeedAuth={() => goToStep(2)}
             notice={reconciliationNotice ?? undefined}

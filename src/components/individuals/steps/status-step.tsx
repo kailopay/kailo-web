@@ -10,12 +10,12 @@ import { formatIdr } from "@/lib/ramp-format";
 import { PrimaryButton } from "../../ui/primary-button";
 import { SecondaryButton } from "../../ui/secondary-button";
 import { RampDepositInstructions } from "../ramp-deposit-instructions";
-import { RampOfframpProgress } from "../ramp-offramp-progress";
 import { RampOrderSummary } from "../ramp-order-summary";
 import type { RampHeaderConfig } from "../ramp-step-header";
 
 type StatusStepProps = {
   orderId: string;
+  initialOrder?: Order | null;
   onNewTransaction: () => void;
   onNeedAuth: () => void;
   notice?: string;
@@ -33,10 +33,10 @@ const STATUS_LABELS: Record<string, string> = {
   stellar_failed: "Transfer failed",
   cancelled: "Cancelled",
   asset_pending: "Waiting for your XLM deposit",
-  asset_received: "Deposit received",
+  asset_received: "Deposit received — processing payout",
   asset_invalid: "Invalid deposit",
-  retirement_processing: "Processing asset",
-  withdrawal_processing: "Processing withdrawal",
+  retirement_processing: "Processing your sell",
+  withdrawal_processing: "Processing payout",
   retirement_failed: "Processing failed",
   withdrawal_failed: "Withdrawal failed",
 };
@@ -49,22 +49,21 @@ function isOfframpFailure(status: OrderStatus): boolean {
 
 export function StatusStep({
   orderId,
+  initialOrder = null,
   onNewTransaction,
   onNeedAuth,
   notice,
   onHeaderChange,
 }: StatusStepProps) {
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [order, setOrder] = useState<Order | null>(initialOrder);
+  const [loading, setLoading] = useState(!initialOrder);
   const [error, setError] = useState<string | null>(null);
-  const [pollMessage, setPollMessage] = useState<string | null>(null);
 
   const fetchOrder = useCallback(async () => {
     try {
       const fresh = await getOrder(orderId);
       setOrder(fresh);
       setError(null);
-      setPollMessage(null);
       return fresh;
     } catch (caught) {
       if (shouldRedirectToAuth(caught)) {
@@ -88,7 +87,7 @@ export function StatusStep({
 
   useEffect(() => {
     if (!onHeaderChange) return;
-    if (loading) {
+    if (loading && !order) {
       onHeaderChange({ title: "Order status" });
       return;
     }
@@ -119,24 +118,20 @@ export function StatusStep({
       return;
     }
 
-    onHeaderChange({ title: "Transaction in progress" });
+    onHeaderChange({ title: "Processing your sell" });
   }, [loading, order, onHeaderChange]);
 
   useEffect(() => {
     if (!order || isTerminalStatus(order.status)) return;
 
     const interval = setInterval(() => {
-      void fetchOrder().then((fresh) => {
-        if (fresh && !isTerminalStatus(fresh.status)) {
-          setPollMessage("Checking for updates...");
-        }
-      });
+      void fetchOrder();
     }, 4000);
 
     return () => clearInterval(interval);
   }, [order, fetchOrder]);
 
-  if (loading) {
+  if (loading && !order) {
     return <p className="text-sm text-ink-muted">Loading order status...</p>;
   }
 
@@ -212,9 +207,34 @@ export function StatusStep({
           </div>
         )}
 
-        {pollMessage && !isTerminalStatus(order.status) && (
-          <p className="mt-3 text-[12px] text-ink-muted">{pollMessage}</p>
-        )}
+        {error && <p className="mt-3 ramp-error-message">{error}</p>}
+
+        <SecondaryButton className="mt-5" onClick={onNewTransaction}>
+          New transaction
+        </SecondaryButton>
+      </div>
+    );
+  }
+
+  if (order.status === "asset_pending") {
+    return (
+      <div>
+        {notice && <p className="mb-4 text-[13px] text-amber-700">{notice}</p>}
+
+        <RampDepositInstructions
+          amount={order.asset.amount}
+          account={order.stellar_destination.account}
+          memo={order.stellar_destination.memo}
+          expiresAt={order.quote.expires_at}
+        />
+
+        <RampOrderSummary
+          className="mt-4"
+          rows={[
+            { label: "You receive", value: `Rp ${formatIdr(Number(order.fiat.amount_minor))}` },
+            { label: "Rate", value: `1 XLM = Rp ${formatIdr(Number(order.quote.adjusted_rate))}` },
+          ]}
+        />
 
         {error && <p className="mt-3 ramp-error-message">{error}</p>}
 
@@ -225,48 +245,33 @@ export function StatusStep({
     );
   }
 
-  const showDepositInstructions = order.status === "asset_pending";
-  const showOfframpProgress = !isTerminalStatus(order.status);
-
   return (
     <div>
       {notice && <p className="mb-4 text-[13px] text-amber-700">{notice}</p>}
 
-      {showOfframpProgress && <RampOfframpProgress status={order.status} />}
+      <div className="rounded-xl bg-paper-warm-2 px-4 py-3">
+        <p className="text-[13px] font-semibold text-ink">
+          {STATUS_LABELS[order.status] ?? order.status}
+        </p>
+        <p className="mt-2 text-[12px] text-ink-body">
+          {order.status === "completed"
+            ? `Rp ${formatIdr(Number(order.fiat.amount_minor))} payout is complete.`
+            : "We will update this page automatically when your order moves forward."}
+        </p>
+      </div>
 
       <RampOrderSummary
-        className={showOfframpProgress ? "mt-4" : undefined}
+        className="mt-4"
         rows={[
-          { label: "Status", value: STATUS_LABELS[order.status] ?? order.status },
-          { label: "Order ID", value: order.id, mono: true, truncate: true },
-          { label: "You pay", value: `${order.asset.amount} XLM` },
+          { label: "You paid", value: `${order.asset.amount} XLM` },
           { label: "You receive", value: `Rp ${formatIdr(Number(order.fiat.amount_minor))}` },
-          { label: "Rate", value: `1 XLM = Rp ${formatIdr(Number(order.quote.adjusted_rate))}` },
         ]}
       />
-
-      {showDepositInstructions && (
-        <div className="mt-4">
-          <RampDepositInstructions
-            amount={order.asset.amount}
-            account={order.stellar_destination.account}
-            memo={order.stellar_destination.memo}
-            expiresAt={order.quote.expires_at}
-          />
-        </div>
-      )}
 
       {order.deposit_transaction_hash && (
         <div className="mt-4 min-w-0 rounded-xl bg-paper-warm-2 px-4 py-3">
           <p className="text-[13px] text-ink-body">Your deposit transaction</p>
           <p className="ramp-mono-break mt-1 text-[11px]">{order.deposit_transaction_hash}</p>
-        </div>
-      )}
-
-      {order.stellar_transaction_hash && (
-        <div className="mt-4 min-w-0 rounded-xl bg-paper-warm-2 px-4 py-3">
-          <p className="text-[13px] text-ink-body">Retirement transaction</p>
-          <p className="ramp-mono-break mt-1 text-[11px]">{order.stellar_transaction_hash}</p>
         </div>
       )}
 
@@ -281,10 +286,6 @@ export function StatusStep({
         <p className="mt-4 text-[12px] text-ink-body">
           Reason: <span className="font-mono">{order.failure_code}</span>
         </p>
-      )}
-
-      {pollMessage && !isTerminalStatus(order.status) && (
-        <p className="mt-3 text-[12px] text-ink-muted">{pollMessage}</p>
       )}
 
       {error && <p className="mt-3 ramp-error-message">{error}</p>}

@@ -238,11 +238,6 @@ export function PaymentStep({
         ]}
       />
 
-      <p className="mt-3 text-[12px] leading-relaxed text-ink-muted">
-        The final IDR amount and rate are locked when you confirm. You will receive a unique deposit
-        memo — include it when sending XLM.
-      </p>
-
       {error && (
         <div className="mt-3">
           <p className="ramp-error-message">{error}</p>

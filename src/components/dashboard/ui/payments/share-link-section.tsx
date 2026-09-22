@@ -1,0 +1,47 @@
+import { Button, CopyText, useCopyToClipboard } from "@dub/ui";
+import { toast } from "sonner";
+import { OpenExternalLinkButton } from "@/components/dashboard/ui/payments/open-external-link-button";
+import { DetailSection } from "@/components/dashboard/ui/shared/detail-section";
+
+export function ShareLinkSection({
+  title,
+  description,
+  url,
+  copyLabel,
+  copySuccessMessage,
+  openLabel,
+  children,
+}: {
+  title: string;
+  description: string;
+  url: string;
+  copyLabel: string;
+  copySuccessMessage: string;
+  openLabel?: string;
+  children?: React.ReactNode;
+}) {
+  const [, copyToClipboard] = useCopyToClipboard();
+
+  return (
+    <DetailSection title={title} description={description}>
+      <CopyText value={url} className="break-all font-mono text-xs">
+        {url}
+      </CopyText>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          text={copyLabel}
+          className="h-9 w-auto"
+          onClick={() => {
+            toast.promise(copyToClipboard(url), {
+              success: copySuccessMessage,
+            });
+          }}
+        />
+        {openLabel ? <OpenExternalLinkButton href={url} text={openLabel} /> : null}
+        {children}
+      </div>
+    </DetailSection>
+  );
+}

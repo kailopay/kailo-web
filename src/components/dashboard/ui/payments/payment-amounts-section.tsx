@@ -1,0 +1,108 @@
+import type { ReactNode } from "react";
+import type { Organization } from "@/lib/dashboard/db/schema";
+import type { PaymentRow } from "@/lib/dashboard/payments/types";
+import { formatAssetRef } from "@/lib/dashboard/payments/types";
+import { getStellarExpertTxUrlIfValid } from "@/lib/dashboard/stellar/explorer";
+import { CopyText } from "@dub/ui";
+import {
+  formatAllowedAssets,
+  formatGrossSettlementAmount,
+  formatInvoiceTotal,
+  formatPaidAmount,
+  formatPaidAsset,
+  formatPlatformFeeAmount,
+  formatSettlementAmount,
+  formatSettlementTarget,
+  hasDistinctGrossSettlementQuote,
+} from "./payment-formatters";
+
+function DetailField({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <p className="text-sm text-neutral-500">{label}</p>
+      <div className="mt-1 text-sm text-neutral-900">{children}</div>
+    </div>
+  );
+}
+
+export function PaymentAmountsSection({
+  payment,
+  environment,
+}: {
+  payment: PaymentRow;
+  environment: Organization["environment"];
+}) {
+  const txExplorerUrl = getStellarExpertTxUrlIfValid(payment.tx_hash, environment);
+
+  return (
+    <div className="border-border-subtle overflow-hidden rounded-xl border bg-neutral-100">
+      <div className="border-border-subtle border-b px-4 py-3">
+        <h2 className="text-content-emphasis text-sm font-semibold">Payment details</h2>
+        <p className="mt-0.5 text-xs text-neutral-500">
+          Amounts, assets, and settlement metadata.
+        </p>
+      </div>
+
+      <div className="border-border-subtle -mx-px -mb-px rounded-xl border bg-white p-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <DetailField label="Invoice total">{formatInvoiceTotal(payment)}</DetailField>
+          <DetailField label="Paid amount">{formatPaidAmount(payment)}</DetailField>
+          <DetailField label="Settlement target">
+            {formatSettlementTarget(payment)}
+          </DetailField>
+          <DetailField label="Settlement amount">
+            {formatSettlementAmount(payment)}
+          </DetailField>
+          <DetailField label="Platform fee">{formatPlatformFeeAmount(payment)}</DetailField>
+          {hasDistinctGrossSettlementQuote(payment) ? (
+            <DetailField label="Gross settlement quote">
+              {formatGrossSettlementAmount(payment)}
+            </DetailField>
+          ) : null}
+          <DetailField label="Settlement asset">
+            {formatAssetRef(payment.settlement_asset)}
+          </DetailField>
+          <DetailField label="Paid asset">{formatPaidAsset(payment)}</DetailField>
+          <DetailField label="Allowed assets">{formatAllowedAssets(payment)}</DetailField>
+          {payment.payer_address ? (
+            <DetailField label="Payer wallet">
+              <CopyText
+                value={payment.payer_address}
+                className="break-all text-left font-mono text-xs"
+              >
+                {payment.payer_address}
+              </CopyText>
+            </DetailField>
+          ) : null}
+          {payment.tx_hash ? (
+            <DetailField label="Transaction hash">
+              {txExplorerUrl ? (
+                <a
+                  href={txExplorerUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="break-all font-mono text-xs underline decoration-dotted underline-offset-2 hover:underline"
+                >
+                  {payment.tx_hash}
+                </a>
+              ) : (
+                <CopyText
+                  value={payment.tx_hash}
+                  className="break-all text-left font-mono text-xs"
+                >
+                  {payment.tx_hash}
+                </CopyText>
+              )}
+            </DetailField>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,9 +1,14 @@
-import { isRecord, kailopayFetch, stringField } from "./http";
+import { isRecord, KailopayError, kailopayFetch, stringField } from "./http";
 import type { User } from "./types";
 
-function parseUser(payload: unknown): User {
+export function parseUser(payload: unknown): User {
   if (!isRecord(payload) || !isRecord(payload.user)) {
-    throw new Error("Malformed user payload");
+    throw new KailopayError(
+      "Unexpected response from server. Try again.",
+      0,
+      "MALFORMED_RESPONSE",
+      null,
+    );
   }
   const user = payload.user;
   const parsed: User = {
@@ -45,6 +50,26 @@ export async function register(
 
 export async function logout(): Promise<void> {
   await kailopayFetch("/auth/logout", { method: "POST" });
+}
+
+export async function updateProfile(input: {
+  display_name?: string;
+  developer_enabled?: boolean;
+}): Promise<User> {
+  return parseUser(
+    await kailopayFetch("/auth/me", {
+      method: "PATCH",
+      body: input,
+    }),
+  );
+}
+
+export async function signOutAndRedirect(path = "/login"): Promise<void> {
+  try {
+    await logout();
+  } finally {
+    window.location.assign(path);
+  }
 }
 
 export async function verifyEmail(token: string): Promise<User> {

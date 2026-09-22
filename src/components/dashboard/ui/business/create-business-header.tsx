@@ -1,0 +1,31 @@
+"use client";
+
+import { Logo } from "@/components/dashboard/shared/logo";
+import { Menu } from "lucide-react";
+import Link from "next/link";
+import { useKycSidebar } from "@/components/dashboard/ui/kyc/kyc-sidebar-context";
+
+export function CreateBusinessHeader() {
+  const { isOpen, setIsOpen } = useKycSidebar();
+
+  return (
+    <div className="border-b border-neutral-200 px-4 pb-4 pt-0 lg:px-6">
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden rounded-md p-1 hover:bg-neutral-100"
+          aria-label="Open business steps"
+        >
+          <Menu className="size-5 text-neutral-600" />
+        </button>
+        <Link href="/dashboard/payments" className="flex items-center">
+          <Logo className="h-7 w-auto" />
+        </Link>
+        <h1 className="text-base font-semibold text-neutral-700">
+          Create business
+        </h1>
+      </div>
+    </div>
+  );
+}
