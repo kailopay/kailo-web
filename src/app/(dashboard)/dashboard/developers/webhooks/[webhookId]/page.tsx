@@ -1,5 +1,16 @@
-import { redirect } from "next/navigation";
+import { WebhookDetailPanel } from "@/components/dashboard/developers/webhook-detail-panel";
+import { DeveloperAccessGate } from "@/components/dashboard/developers/developer-access-gate";
 
-export default function WebhookDetailPage() {
-  redirect("/dashboard/developers/webhooks");
+type WebhookDetailPageProps = {
+  params: Promise<{ webhookId: string }>;
+};
+
+export default async function WebhookDetailPage({ params }: WebhookDetailPageProps) {
+  const { webhookId } = await params;
+
+  return (
+    <DeveloperAccessGate>
+      <WebhookDetailPanel webhookId={webhookId} />
+    </DeveloperAccessGate>
+  );
 }

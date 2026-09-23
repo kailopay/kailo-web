@@ -3,7 +3,10 @@
 import NumberFlow, { NumberFlowGroup } from "@number-flow/react";
 import { cn } from "@dub/utils";
 import { ChevronRight } from "lucide-react";
+import { formatIdrMinor } from "@/lib/kailopay/developer/format";
 import type { DashboardAnalytics, MetricTab } from "@/lib/dashboard/analytics/types";
+
+export type AnalyticsVolumeFormat = "usd-cents" | "idr-minor";
 
 type Tab = {
   id: MetricTab;
@@ -29,19 +32,42 @@ const TABS: Tab[] = [
   },
 ];
 
+function formatVolumeTotal(value: number, volumeFormat: AnalyticsVolumeFormat) {
+  if (volumeFormat === "idr-minor") {
+    return formatIdrMinor(String(value));
+  }
+  return null;
+}
+
 export function MetricTabs({
   tab,
   totals,
   onSelectTab,
+  volumeFormat = "usd-cents",
+  volumeLabel,
+  paymentsLabel,
 }: {
   tab: MetricTab;
   totals: DashboardAnalytics["totals"];
   onSelectTab: (id: MetricTab) => void;
+  volumeFormat?: AnalyticsVolumeFormat;
+  volumeLabel?: string;
+  paymentsLabel?: string;
 }) {
+  const tabs = TABS.map((item) => ({
+    ...item,
+    label:
+      item.id === "volume"
+        ? (volumeLabel ?? item.label)
+        : item.id === "payments"
+          ? (paymentsLabel ?? item.label)
+          : item.label,
+  }));
+
   return (
     <div className="grid w-full grid-cols-3 divide-x divide-neutral-200 overflow-y-hidden">
       <NumberFlowGroup>
-        {TABS.map(({ id, label, colorClassName }, idx) => (
+        {tabs.map(({ id, label, colorClassName }, idx) => (
           <div key={id} className="relative z-0">
             {idx > 0 && (
               <div className="absolute left-0 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200 bg-white p-1.5">
@@ -77,29 +103,35 @@ export function MetricTabs({
                 <span>{label}</span>
               </div>
               <div className="mt-1 flex h-12 items-center">
-                <NumberFlow
-                  value={id === "volume" ? totals.volume : totals[id]}
-                  className="text-xl font-medium sm:text-3xl"
-                  format={
-                    id === "volume"
-                      ? {
-                          style: "currency",
-                          currency: "USD",
-                          trailingZeroDisplay: "stripIfInteger",
-                        }
-                      : id === "successRate"
+                {id === "volume" && volumeFormat === "idr-minor" ? (
+                  <span className="text-xl font-medium sm:text-3xl">
+                    {formatVolumeTotal(totals.volume, volumeFormat)}
+                  </span>
+                ) : (
+                  <NumberFlow
+                    value={id === "volume" ? totals.volume : totals[id]}
+                    className="text-xl font-medium sm:text-3xl"
+                    format={
+                      id === "volume"
                         ? {
-                            style: "decimal",
-                            maximumFractionDigits: 1,
-                            minimumFractionDigits: 1,
+                            style: "currency",
+                            currency: "USD",
+                            trailingZeroDisplay: "stripIfInteger",
                           }
-                        : {
-                            notation:
-                              totals[id] > 999999 ? "compact" : "standard",
-                          }
-                  }
-                  suffix={id === "successRate" ? "%" : undefined}
-                />
+                        : id === "successRate"
+                          ? {
+                              style: "decimal",
+                              maximumFractionDigits: 1,
+                              minimumFractionDigits: 1,
+                            }
+                          : {
+                              notation:
+                                totals[id] > 999999 ? "compact" : "standard",
+                            }
+                    }
+                    suffix={id === "successRate" ? "%" : undefined}
+                  />
+                )}
               </div>
             </button>
           </div>

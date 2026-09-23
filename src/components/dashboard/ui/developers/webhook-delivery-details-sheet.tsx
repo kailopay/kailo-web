@@ -19,12 +19,14 @@ export function WebhookDeliveryDetailsSheet({
   delivery,
   onPrevious,
   onNext,
+  onReplay,
 }: {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   delivery: WebhookDeliveryRow | null;
   onPrevious?: () => void;
   onNext?: () => void;
+  onReplay?: () => void;
 }) {
   if (!delivery) {
     return null;
@@ -81,9 +83,12 @@ export function WebhookDeliveryDetailsSheet({
           <section className="space-y-2">
             <h3 className="text-sm font-medium text-neutral-900">Response</h3>
             <p className="text-sm text-neutral-500">
-              HTTP {delivery.responseStatus ?? "N/A"} · {delivery.status} ·{" "}
-              {delivery.attempts}/{delivery.maxAttempts} attempts
+              HTTP {delivery.responseStatus ?? "N/A"} · {delivery.status} · attempt{" "}
+              {delivery.attempts}
             </p>
+            {onReplay ? (
+              <Button type="button" variant="secondary" text="Replay delivery" onClick={onReplay} />
+            ) : null}
             {responseBody ? (
               <pre className="overflow-x-auto rounded-lg border border-neutral-200 bg-neutral-50 p-4 text-xs text-neutral-700">
                 {responseBody}

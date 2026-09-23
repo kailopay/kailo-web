@@ -1,13 +1,44 @@
 "use client";
 
-import { isNavItemActive, isPaymentsRoute } from "@/lib/dashboard/navigation/dashboard-nav";
-import { ArrowsOppositeDirectionX, BookOpen, Code, ConnectedDots4, Gauge6, Gear2, Globe2, InvoiceDollar, Key, MoneyBill2, Refresh2, User, Users6, Webhook } from "./icons";
+import { isNavItemActive } from "@/lib/dashboard/navigation/dashboard-nav";
+import {
+  ArrowsOppositeDirectionX,
+  BookOpen,
+  Code,
+  Gauge6,
+  InvoiceDollar,
+  Key,
+  MoneyBill2,
+  Refresh2,
+  User,
+  Webhook,
+} from "./icons";
+import { NavItemType, SidebarNav, SidebarSubmenu } from "./sidebar-nav";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { NavItemType, SidebarNav, SidebarSubmenu } from "./sidebar-nav";
 
 const DEVELOPERS_SUBMENU_ID = "developers";
-const SETTINGS_SUBMENU_ID = "settings";
+
+const DEVELOPERS_SUBMENU_PATHS = [
+  "/dashboard/developers/api-keys",
+  "/dashboard/developers/wallets",
+  "/dashboard/developers/webhooks",
+  "/dashboard/developers/documentation",
+] as const;
+
+function isDevelopersSubmenuPath(pathname: string) {
+  return DEVELOPERS_SUBMENU_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+}
+
+function resolveActiveSubmenu(pathname: string): string | null {
+  if (isDevelopersSubmenuPath(pathname)) {
+    return DEVELOPERS_SUBMENU_ID;
+  }
+
+  return null;
+}
 
 function getDevelopersSubmenu(): SidebarSubmenu {
   return {
@@ -19,53 +50,25 @@ function getDevelopersSubmenu(): SidebarSubmenu {
         name: "API Keys",
         icon: Key,
         href: "/dashboard/developers/api-keys",
-        isActive: (p, h) => isNavItemActive(p, h),
+        isActive: (pathname, href) => isNavItemActive(pathname, href),
+      },
+      {
+        name: "Wallets",
+        icon: MoneyBill2,
+        href: "/dashboard/developers/wallets",
+        isActive: (pathname, href) => isNavItemActive(pathname, href),
       },
       {
         name: "Webhooks",
         icon: Webhook,
         href: "/dashboard/developers/webhooks",
-        isActive: (p, h) => isNavItemActive(p, h),
+        isActive: (pathname, href) => isNavItemActive(pathname, href),
       },
       {
         name: "Documentation",
         icon: BookOpen,
         href: "/dashboard/developers/documentation",
-        isActive: (p, h) => isNavItemActive(p, h),
-      },
-    ],
-  };
-}
-
-function getSettingsSubmenu(): SidebarSubmenu {
-  return {
-    id: SETTINGS_SUBMENU_ID,
-    title: "Settings",
-    backHref: "/dashboard",
-    items: [
-      {
-        name: "Profile",
-        icon: User,
-        href: "/dashboard/settings/profile",
-        isActive: (p, h) => isNavItemActive(p, h),
-      },
-      {
-        name: "Business",
-        icon: Globe2,
-        href: "/dashboard/settings/business",
-        isActive: (p, h) => isNavItemActive(p, h),
-      },
-      {
-        name: "Settlement Wallet",
-        icon: MoneyBill2,
-        href: "/dashboard/settings/settlement-wallet",
-        isActive: (p, h) => isNavItemActive(p, h),
-      },
-      {
-        name: "Team Members",
-        icon: Users6,
-        href: "/dashboard/settings/team",
-        isActive: (p, h) => isNavItemActive(p, h),
+        isActive: (pathname, href) => isNavItemActive(pathname, href),
       },
     ],
   };
@@ -74,80 +77,56 @@ function getSettingsSubmenu(): SidebarSubmenu {
 function getMainNavItems(): NavItemType[] {
   return [
     {
-      name: "Home",
+      name: "Overview",
       icon: Gauge6,
       href: "/dashboard",
-      isActive: (p, h) => isNavItemActive(p, h),
+      isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
     {
-      name: "Payments",
-      icon: InvoiceDollar,
-      href: "/dashboard/payments",
-      isActive: (p) => isPaymentsRoute(p),
-    },
-    {
-      name: "Transactions",
-      icon: ArrowsOppositeDirectionX,
-      href: "/dashboard/transactions",
-      isActive: (p, h) => isNavItemActive(p, h),
-    },
-    {
-      name: "Settlements",
+      name: "Analytics",
       icon: Refresh2,
-      href: "/dashboard/settlements",
-      isActive: (p, h) => isNavItemActive(p, h),
+      href: "/dashboard/developers/analytics",
+      isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
     {
-      name: "Customers",
-      icon: User,
-      href: "/dashboard/customers",
-      isActive: (p, h) => isNavItemActive(p, h),
+      name: "Orders",
+      icon: ArrowsOppositeDirectionX,
+      href: "/dashboard/developers/orders",
+      isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
     {
-      name: "Integrations",
-      icon: ConnectedDots4,
-      href: "/dashboard/integrations",
-      isActive: (p) => p.startsWith("/dashboard/integrations"),
+      name: "Revenue",
+      icon: InvoiceDollar,
+      href: "/dashboard/developers/revenue",
+      isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
     {
       name: "Developers",
       icon: Code,
       href: "/dashboard/developers/api-keys",
       submenuId: DEVELOPERS_SUBMENU_ID,
-      isActive: (p) => p.startsWith("/dashboard/developers"),
+      isActive: (pathname) => isDevelopersSubmenuPath(pathname),
     },
     {
-      name: "Settings",
-      icon: Gear2,
-      href: "/dashboard/settings/business",
-      submenuId: SETTINGS_SUBMENU_ID,
-      isActive: (p) => p.startsWith("/dashboard/settings"),
+      name: "Profile",
+      icon: User,
+      href: "/dashboard/settings/profile",
+      isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
   ];
 }
 
 export function DashboardSidebarNav() {
   const pathname = usePathname();
+  const activeSubmenu = useMemo(() => resolveActiveSubmenu(pathname), [pathname]);
 
-  const activeSubmenu = useMemo(() => {
-    if (pathname.startsWith("/dashboard/settings")) {
-      return SETTINGS_SUBMENU_ID;
-    }
-
-    if (pathname.startsWith("/dashboard/developers")) {
-      return DEVELOPERS_SUBMENU_ID;
-    }
-
-    return null;
-  }, [pathname]);
-
-  const submenus = useMemo(
-    () => ({
-      [DEVELOPERS_SUBMENU_ID]: getDevelopersSubmenu(),
-      [SETTINGS_SUBMENU_ID]: getSettingsSubmenu(),
-    }),
-    [],
+  return (
+    <SidebarNav
+      mainItems={getMainNavItems()}
+      submenus={{
+        [DEVELOPERS_SUBMENU_ID]: getDevelopersSubmenu(),
+      }}
+      activeSubmenu={activeSubmenu}
+    />
   );
-
-  return <SidebarNav mainItems={getMainNavItems()} submenus={submenus} activeSubmenu={activeSubmenu} />;
 }

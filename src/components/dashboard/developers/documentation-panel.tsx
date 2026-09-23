@@ -31,7 +31,7 @@ export function DocumentationPanel() {
     {
       icon: Bolt,
       title: "Quickstart",
-      description: "Create your first payment with the REST API and complete checkout on Stellar testnet.",
+      description: "Create your first payment with the REST API and complete checkout end to end.",
       href: quickstartUrl,
       cta: "View",
     },

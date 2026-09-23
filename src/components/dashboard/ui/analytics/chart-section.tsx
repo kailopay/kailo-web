@@ -5,7 +5,8 @@ import { cn, currencyFormatter, nFormatter } from "@dub/utils";
 import { format, parseISO } from "date-fns";
 import { Fragment, useMemo } from "react";
 import type { DashboardAnalytics, MetricTab } from "@/lib/dashboard/analytics/types";
-import { MetricTabs } from "./metric-tabs";
+import { MetricTabs, type AnalyticsVolumeFormat } from "./metric-tabs";
+import { formatIdrMinor } from "@/lib/kailopay/developer/format";
 
 function formatTooltipDate(date: Date) {
   return format(date, "MMM d, yyyy");
@@ -16,11 +17,17 @@ export function ChartSection({
   onSelectTab,
   analytics,
   isLoading,
+  volumeFormat = "usd-cents",
+  volumeLabel,
+  paymentsLabel,
 }: {
   selectedTab: MetricTab;
   onSelectTab: (tab: MetricTab) => void;
   analytics: DashboardAnalytics | null;
   isLoading: boolean;
+  volumeFormat?: AnalyticsVolumeFormat;
+  volumeLabel?: string;
+  paymentsLabel?: string;
 }) {
   const chartData = useMemo(() => {
     if (!analytics) {
@@ -72,6 +79,9 @@ export function ChartSection({
           tab={selectedTab}
           totals={totals}
           onSelectTab={onSelectTab}
+          volumeFormat={volumeFormat}
+          volumeLabel={volumeLabel}
+          paymentsLabel={paymentsLabel}
         />
       </div>
       <div className="relative overflow-hidden border-x border-b border-neutral-200 sm:rounded-b-xl">
@@ -111,7 +121,9 @@ export function ChartSection({
                         </div>
                         <p className="text-right font-medium text-neutral-900">
                           {selectedTab === "volume"
-                            ? currencyFormatter(d.values.volume)
+                            ? volumeFormat === "idr-minor"
+                              ? formatIdrMinor(String(d.values.volume))
+                              : currencyFormatter(d.values.volume)
                             : selectedTab === "successRate"
                               ? `${d.values.successRate}%`
                               : nFormatter(d.values.payments, { full: true })}
@@ -127,10 +139,12 @@ export function ChartSection({
                   showGridLines
                   tickFormat={
                     selectedTab === "volume"
-                      ? (v) =>
-                          currencyFormatter(v, {
-                            trailingZeroDisplay: "stripIfInteger",
-                          })
+                      ? volumeFormat === "idr-minor"
+                        ? (v) => formatIdrMinor(String(Math.round(v)))
+                        : (v) =>
+                            currencyFormatter(v, {
+                              trailingZeroDisplay: "stripIfInteger",
+                            })
                       : selectedTab === "successRate"
                         ? (v) => `${v}%`
                         : nFormatter
