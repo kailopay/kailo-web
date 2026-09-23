@@ -1,0 +1,1 @@
+var l=()=>{let t=new Date;return new Date(t.getFullYear(),t.getMonth()+1,0).getDate()},u=t=>{let e=l();return t>e?e:t},D=t=>{let e=new Date,o=e.getDate(),n=e.getMonth(),a=e.getFullYear(),r=u(t);if(o<=r){let s=n===0?11:n-1,c=n===0?a-1:a;return new Date(c,s,r)}else return new Date(a,n,r)};export{l as a,u as b,D as c};

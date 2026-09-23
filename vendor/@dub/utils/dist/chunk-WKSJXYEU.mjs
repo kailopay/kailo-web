@@ -1,0 +1,1 @@
+var n=new RegExp(/^[0-9A-Za-z_\u0080-\uFFFF\/\-\p{Emoji}.]+$/u),i=e=>{if(e==="_root")return!1;let t=[".well-known"],o=[".php",".php7"];return t.some(s=>e.startsWith(s))||o.some(s=>e.endsWith(s))},r=e=>["favicon.ico","sitemap.xml","robots.txt","manifest.webmanifest","manifest.json","apple-app-site-association"].includes(e);export{n as a,i as b,r as c};

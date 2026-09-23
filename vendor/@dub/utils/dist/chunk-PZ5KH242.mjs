@@ -1,0 +1,1 @@
+import t from"ms";var a=(n,{withAgo:r}={})=>{if(!n)return"Never";let e=Date.now()-new Date(n).getTime();return e<0||e>828e5?new Date(n).toLocaleDateString("en-US",{month:"short",day:"numeric",year:e<0||new Date(n).getFullYear()!==new Date().getFullYear()?"numeric":void 0}):e<1e3?"Just now":`${t(e)}${r?" ago":""}`};export{a};

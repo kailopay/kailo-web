@@ -1,0 +1,1 @@
+var D=e=>{let r=new Date,a=r.getDate(),t=r.getMonth(),n=r.getFullYear();if(a>=e)return{firstDay:new Date(n,t,e),lastDay:new Date(n,t+1,e-1)};{let s=t===0?n-1:n,o=t===0?11:t-1;return{firstDay:new Date(s,o,e),lastDay:new Date(n,t,e-1)}}};export{D as a};

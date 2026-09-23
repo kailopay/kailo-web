@@ -1,0 +1,1 @@
+var a=(t,r)=>{let e=new Date(t),n=new Date;return e.toLocaleDateString("en-US",{month:"short",day:"numeric",...e.getUTCFullYear()!==n.getUTCFullYear()?{year:"numeric"}:{hour:"numeric",minute:"numeric",hour12:!0},...r})};export{a};

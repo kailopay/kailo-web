@@ -1,0 +1,28 @@
+
+> @dub/ui@0.3.5 build
+> tsup
+
+[1G[0K[34mCLI[39m Building entry: {"index":"src/index.tsx","icons/index":"src/icons/index.tsx","charts/index":"src/charts/index.ts"}
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v6.7.0
+[34mCLI[39m Using tsup config: /Users/indramahesa/Developments/projects/stellar/frontend-poc/packages/ui/tsup.config.ts
+[34mCLI[39m Target: es2022
+[34mESM[39m Build start
+(node:59023) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/indramahesa/Developments/projects/stellar/frontend-poc/packages/tailwind-config/tailwind.config.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/indramahesa/Developments/projects/stellar/frontend-poc/packages/tailwind-config/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[34mDTS[39m Build start
+[32mESM[39m [1mdist/icons/index.mjs    [22m[32m6.09 KB[39m
+[32mESM[39m [1mdist/index.mjs          [22m[32m231.36 KB[39m
+[32mESM[39m [1mdist/chunk-JNGL4IFE.mjs [22m[32m630.00 B[39m
+[32mESM[39m [1mdist/charts/index.mjs   [22m[32m15.04 KB[39m
+[32mESM[39m [1mdist/chunk-ODP4TO4B.mjs [22m[32m87.19 KB[39m
+[32mESM[39m [1mdist/chunk-QHDQMWOD.mjs [22m[32m369.96 KB[39m
+[32mESM[39m [1mdist/index.css          [22m[32m113.48 KB[39m
+[32mESM[39m ⚡️ Build success in 2865ms
+[32mDTS[39m ⚡️ Build success in 19141ms
+[32mDTS[39m [1mdist/index.d.ts        [22m[32m62.97 KB[39m
+[32mDTS[39m [1mdist/icons/index.d.ts  [22m[32m36.64 KB[39m
+[32mDTS[39m [1mdist/charts/index.d.ts [22m[32m6.23 KB[39m
+[1G[0K⠙[1G[0K

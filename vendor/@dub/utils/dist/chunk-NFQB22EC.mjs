@@ -1,0 +1,1 @@
+function i(t,r=2){return JSON.stringify(t,(n,e)=>e instanceof Set?{__type:"Set",values:[...e]}:e instanceof Map?{__type:"Map",entries:[...e.entries()]}:e instanceof Date?e.toISOString():e instanceof Error?{__type:"Error",message:e.message,stack:e.stack}:e,r)}export{i as a};

@@ -1,0 +1,1 @@
+var c=async({url:n,requestDomain:i})=>{let t=await fetch(n),r=t.headers.get("content-security-policy");if(r){let e=r.match(/frame-ancestors\s+([\s\S]+?)(?=;|$)/i);if(e&&(e[1]==="*"||e[1].split(/\s+/).includes(i)))return!0}let s=t.headers.get("X-Frame-Options");return!(s==="DENY"||s==="SAMEORIGIN")};export{c as a};

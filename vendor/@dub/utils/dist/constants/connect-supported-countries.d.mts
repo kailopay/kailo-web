@@ -1,0 +1,3 @@
+declare const CONNECT_SUPPORTED_COUNTRIES: string[];
+
+export { CONNECT_SUPPORTED_COUNTRIES };

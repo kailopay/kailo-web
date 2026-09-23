@@ -1,0 +1,1 @@
+import{a as o}from"./chunk-QYIU7UMU.mjs";import{a as t}from"./chunk-FJFDTHKA.mjs";var m=(c,e)=>{let n=o(c),r=e?.currency||"USD";return Intl.NumberFormat("en-US",{style:"currency",currency:r,trailingZeroDisplay:t(r)?"stripIfInteger":"auto",...e}).format(t(r)?n:n/100)};export{m as a};

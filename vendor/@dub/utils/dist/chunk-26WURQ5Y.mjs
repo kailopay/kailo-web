@@ -1,0 +1,1 @@
+async function n(o,e){let r=await fetch(o,{...e,...e?.headers&&{headers:e.headers}});if(!r.ok){let t=(await r.json())?.error?.message||"An error occurred while fetching the data.",s=new Error(t);throw s.info=t,s.status=r.status,s}return r.json()}export{n as a};

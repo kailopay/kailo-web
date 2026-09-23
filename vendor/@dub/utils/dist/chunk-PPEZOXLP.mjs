@@ -1,0 +1,1 @@
+import{a as c}from"./chunk-FKLXONKR.mjs";var i=(t,n)=>{let r=t.split("."),o=r.pop()||"";return`${r.join(".").slice(0,n)}...${o}`},g=(t,n)=>{if(t.length<=n)return t;let[r,...o]=t.split("/"),s=o.join("/"),e=n-8,a=c(s,e);return`${i(r,n-a.length)}/${a}`};export{g as a};

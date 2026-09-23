@@ -1,0 +1,3 @@
+declare const PAYPAL_SUPPORTED_COUNTRIES: string[];
+
+export { PAYPAL_SUPPORTED_COUNTRIES };

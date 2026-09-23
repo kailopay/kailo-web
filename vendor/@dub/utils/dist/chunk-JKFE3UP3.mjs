@@ -1,0 +1,1 @@
+function n(e){for(let t=e.target,a=0;t&&t!==e.currentTarget&&a<50;t=t.parentElement,a++)if(["button","a","input","textarea"].includes(t.tagName.toLowerCase())||t.getAttribute("role")==="dialog"||t.id==="modal-backdrop"||["data-radix-popper-content-wrapper","data-vaul-overlay","data-vaul-drawer"].some(r=>t.getAttribute(r)!==null))return!0;return!1}export{n as a};
