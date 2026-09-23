@@ -72,3 +72,17 @@ export function formatCrypto(amount: number, decimals = 4): string {
   if (!amount) return "0";
   return idDecimalFormatter(decimals).format(amount);
 }
+
+/** Display XLM without unnecessary trailing zeros (API payloads stay at 7 decimals). */
+export function formatXlmDisplay(value: string | number): string {
+  const numeric = typeof value === "number" ? value : Number.parseFloat(value);
+  if (!Number.isFinite(numeric)) {
+    const trimmed = String(value).trim();
+    return trimmed || "0";
+  }
+
+  return numeric
+    .toFixed(7)
+    .replace(/(\.\d*?[1-9])0+$/, "$1")
+    .replace(/\.0+$/, "");
+}

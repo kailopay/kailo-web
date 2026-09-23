@@ -6,6 +6,7 @@ import {
   optionalStringField,
   stringField,
 } from "./http";
+import { isOfframpStatus } from "./order-utils";
 import type {
   Checkout,
   Order,
@@ -25,16 +26,6 @@ const ORDER_STATUSES: readonly OrderStatus[] = [
   "payment_failed",
   "stellar_failed",
   "cancelled",
-  "asset_pending",
-  "asset_received",
-  "asset_invalid",
-  "retirement_processing",
-  "withdrawal_processing",
-  "retirement_failed",
-  "withdrawal_failed",
-];
-
-const OFFRAMP_STATUSES: readonly OrderStatus[] = [
   "asset_pending",
   "asset_received",
   "asset_invalid",
@@ -132,7 +123,10 @@ function parseOrderBody(order: Record<string, unknown>): Order {
   const parsed: Order = {
     id: stringField(order, "id"),
     direction:
-      OFFRAMP_STATUSES.includes(orderStatus) || payout !== undefined || depositHash !== undefined
+      isOfframpStatus(orderStatus) ||
+      payout !== undefined ||
+      depositHash !== undefined ||
+      (order.checkout === null && orderStatus === "asset_pending")
         ? "offramp"
         : "onramp",
     status: orderStatus,

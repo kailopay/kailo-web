@@ -4,11 +4,18 @@ import { useCallback, useEffect, useState } from "react";
 
 import { rampErrorMessage, shouldRedirectToAuth } from "@/lib/kailopay/errors";
 import { KailopayError } from "@/lib/kailopay/http";
+import {
+  hasDepositInstructions,
+  isOfframpOrder,
+  mergeOrderUpdates,
+  offrampProgressMessage,
+} from "@/lib/kailopay/order-utils";
 import { getOrder, isTerminalStatus, paymentLinkForCheckout } from "@/lib/kailopay/orders";
 import type { Order, OrderStatus } from "@/lib/kailopay/types";
-import { formatIdr } from "@/lib/ramp-format";
+import { formatIdr, formatXlmDisplay } from "@/lib/ramp-format";
 import { PrimaryButton } from "../../ui/primary-button";
 import { SecondaryButton } from "../../ui/secondary-button";
+import { RampCopyButton } from "../ramp-copy-button";
 import { RampDepositInstructions } from "../ramp-deposit-instructions";
 import { RampOrderSummary } from "../ramp-order-summary";
 import type { RampHeaderConfig } from "../ramp-step-header";
@@ -33,7 +40,7 @@ const STATUS_LABELS: Record<string, string> = {
   stellar_failed: "Transfer failed",
   cancelled: "Cancelled",
   asset_pending: "Waiting for your XLM deposit",
-  asset_received: "Deposit received — processing payout",
+  asset_received: "Deposit received",
   asset_invalid: "Invalid deposit",
   retirement_processing: "Processing your sell",
   withdrawal_processing: "Processing payout",
@@ -62,7 +69,7 @@ export function StatusStep({
   const fetchOrder = useCallback(async () => {
     try {
       const fresh = await getOrder(orderId);
-      setOrder(fresh);
+      setOrder((current) => mergeOrderUpdates(current, fresh));
       setError(null);
       return fresh;
     } catch (caught) {
@@ -96,8 +103,7 @@ export function StatusStep({
       return;
     }
 
-    const isBuy = order.direction === "onramp";
-    if (isBuy) {
+    if (!isOfframpOrder(order)) {
       onHeaderChange({
         title:
           order.status === "completed" ? "Transaction complete" : "Transaction in progress",
@@ -150,9 +156,7 @@ export function StatusStep({
     );
   }
 
-  const isBuy = order.direction === "onramp";
-
-  if (isBuy) {
+  if (!isOfframpOrder(order)) {
     const paymentLink = paymentLinkForCheckout(order.checkout);
 
     return (
@@ -178,7 +182,9 @@ export function StatusStep({
           </div>
           <div className="mt-2 flex items-center justify-between gap-3">
             <span className="text-[13px] text-ink-body">You receive</span>
-            <span className="text-[13px] font-semibold text-ink">{order.asset.amount} XLM</span>
+            <span className="text-[13px] font-semibold text-ink">
+              {formatXlmDisplay(order.asset.amount)} XLM
+            </span>
           </div>
           <div className="mt-2 flex items-center justify-between gap-3">
             <span className="text-[13px] text-ink-body">Rate</span>
@@ -226,6 +232,7 @@ export function StatusStep({
           account={order.stellar_destination.account}
           memo={order.stellar_destination.memo}
           expiresAt={order.quote.expires_at}
+          onRetry={() => void fetchOrder()}
         />
 
         <RampOrderSummary
@@ -236,7 +243,9 @@ export function StatusStep({
           ]}
         />
 
-        {error && <p className="mt-3 ramp-error-message">{error}</p>}
+        {!hasDepositInstructions(order) && error ? (
+          <p className="mt-3 ramp-error-message">{error}</p>
+        ) : null}
 
         <SecondaryButton className="mt-5" onClick={onNewTransaction}>
           New transaction
@@ -253,40 +262,52 @@ export function StatusStep({
         <p className="text-[13px] font-semibold text-ink">
           {STATUS_LABELS[order.status] ?? order.status}
         </p>
-        <p className="mt-2 text-[12px] text-ink-body">
-          {order.status === "completed"
-            ? `Rp ${formatIdr(Number(order.fiat.amount_minor))} payout is complete.`
-            : "We will update this page automatically when your order moves forward."}
-        </p>
+        <p className="mt-2 text-[12px] text-ink-body">{offrampProgressMessage(order)}</p>
+
+        <RampOrderSummary
+          embedded
+          className="mt-4"
+          rows={[
+            { label: "You paid", value: `${formatXlmDisplay(order.asset.amount)} XLM` },
+            { label: "You receive", value: `Rp ${formatIdr(Number(order.fiat.amount_minor))}` },
+          ]}
+        />
+
+        {order.deposit_transaction_hash ? (
+          <div className="mt-4 min-w-0">
+            <p className="text-[13px] text-ink-body">Your deposit transaction</p>
+            <div className="flex items-start gap-3">
+              <p className="ramp-mono-break min-w-0 flex-1 text-[11px] text-ink">
+                {order.deposit_transaction_hash}
+              </p>
+              <RampCopyButton value={order.deposit_transaction_hash} label="deposit transaction" />
+            </div>
+          </div>
+        ) : null}
+
+        {order.stellar_transaction_hash ? (
+          <div className="mt-4 min-w-0">
+            <p className="text-[13px] text-ink-body">Retirement transaction</p>
+            <p className="ramp-mono-break mt-1 text-[11px] text-ink">{order.stellar_transaction_hash}</p>
+          </div>
+        ) : null}
+
+        {order.payout ? (
+          <div className="mt-4">
+            <p className="text-[13px] font-medium text-ink">Payout reference</p>
+            <p className="mt-1 font-mono text-[12px] text-ink">{order.payout.reference}</p>
+            {order.payout.disclosure ? (
+              <p className="mt-2 text-[12px] leading-relaxed text-ink-body">{order.payout.disclosure}</p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {isOfframpFailure(order.status) && order.failure_code ? (
+          <p className="mt-4 text-[12px] text-ink-body">
+            Reason: <span className="font-mono">{order.failure_code}</span>
+          </p>
+        ) : null}
       </div>
-
-      <RampOrderSummary
-        className="mt-4"
-        rows={[
-          { label: "You paid", value: `${order.asset.amount} XLM` },
-          { label: "You receive", value: `Rp ${formatIdr(Number(order.fiat.amount_minor))}` },
-        ]}
-      />
-
-      {order.deposit_transaction_hash && (
-        <div className="mt-4 min-w-0 rounded-xl bg-paper-warm-2 px-4 py-3">
-          <p className="text-[13px] text-ink-body">Your deposit transaction</p>
-          <p className="ramp-mono-break mt-1 text-[11px]">{order.deposit_transaction_hash}</p>
-        </div>
-      )}
-
-      {order.payout && (
-        <div className="mt-4 rounded-xl border border-ink/[0.08] px-4 py-3">
-          <p className="text-[13px] font-medium text-ink">Payout reference</p>
-          <p className="mt-1 font-mono text-[12px] text-ink">{order.payout.reference}</p>
-        </div>
-      )}
-
-      {isOfframpFailure(order.status) && order.failure_code && (
-        <p className="mt-4 text-[12px] text-ink-body">
-          Reason: <span className="font-mono">{order.failure_code}</span>
-        </p>
-      )}
 
       {error && <p className="mt-3 ramp-error-message">{error}</p>}
 

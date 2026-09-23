@@ -23,7 +23,7 @@ import {
 import { savePendingOrderId } from "@/lib/kailopay/storage";
 import { useQuotePreview } from "@/lib/kailopay/use-quote-preview";
 import type { Order, RampDraft } from "@/lib/kailopay/types";
-import { formatIdr, parseAmountInput, parseIntegerInput } from "@/lib/ramp-format";
+import { formatIdr, formatXlmDisplay, parseAmountInput, parseIntegerInput } from "@/lib/ramp-format";
 import { PrimaryButton } from "../../ui/primary-button";
 import { RampOrderSummary } from "../ramp-order-summary";
 import { RampStepLoading } from "../ramp-step-loading";
@@ -223,7 +223,7 @@ export function PaymentStep({
       <RampOrderSummary
         className="mt-4"
         rows={[
-          { label: "You pay", value: `${draft.payAmount} XLM` },
+          { label: "You pay", value: `${formatXlmDisplay(draft.payAmount)} XLM` },
           { label: "You receive", value: `Rp ${formatIdr(Math.round(receiveAmount))}` },
           {
             label: "Bank",

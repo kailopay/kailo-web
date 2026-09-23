@@ -472,6 +472,10 @@ body {
   padding: 1rem;
 }
 
+.ramp-deposit-instructions .ramp-deposit-field + .ramp-deposit-field {
+  margin-top: 1.25rem;
+}
+
 .ramp-deposit-instructions--error {
   border-color: rgba(220, 38, 38, 0.2);
   background: rgba(254, 242, 242, 0.5);

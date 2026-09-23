@@ -10,12 +10,18 @@ type RampOrderSummaryRow = {
 type RampOrderSummaryProps = {
   rows: RampOrderSummaryRow[];
   className?: string;
+  embedded?: boolean;
 };
 
-export function RampOrderSummary({ rows, className }: RampOrderSummaryProps) {
+export function RampOrderSummary({ rows, className, embedded = false }: RampOrderSummaryProps) {
   return (
     <div
-      className={["space-y-2 rounded-xl bg-paper-warm-2 px-4 py-3 text-[13px] text-ink-body", className]
+      className={[
+        embedded
+          ? "space-y-2 text-[13px] text-ink-body"
+          : "space-y-2 rounded-xl bg-paper-warm-2 px-4 py-3 text-[13px] text-ink-body",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
     >

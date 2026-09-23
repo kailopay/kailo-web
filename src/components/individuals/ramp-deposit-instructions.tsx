@@ -1,6 +1,7 @@
 "use client";
 
 import { buildStellarPaymentUri } from "@/lib/kailopay/stellar-payment-uri";
+import { formatXlmDisplay } from "@/lib/ramp-format";
 import { RampCopyButton } from "./ramp-copy-button";
 import { RampPaymentQr } from "./ramp-payment-qr";
 
@@ -9,6 +10,7 @@ type RampDepositInstructionsProps = {
   account: string;
   memo: string | null;
   expiresAt?: string | null;
+  onRetry?: () => void;
 };
 
 function formatExpiry(value: string): string {
@@ -25,49 +27,74 @@ export function RampDepositInstructions({
   account,
   memo,
   expiresAt,
+  onRetry,
 }: RampDepositInstructionsProps) {
-  const hasAccount = account.trim().length > 0;
+  const trimmedAccount = account.trim();
+  const trimmedMemo = memo?.trim() ?? "";
+  const hasAccount = trimmedAccount.length > 0;
+  const hasMemo = trimmedMemo.length > 0;
 
-  if (!hasAccount) {
+  if (!hasAccount || !hasMemo) {
     return (
       <div className="ramp-deposit-instructions ramp-deposit-instructions--error">
         <p className="text-[13px] font-medium text-ink">Deposit instructions unavailable</p>
         <p className="mt-2 text-[12px] leading-relaxed text-ink-body">
-          Your sell order was created, but the deposit address is missing from the API response.
-          Keep your order ID and contact support.
+          We could not load the deposit address or memo from the backend yet. Refresh this page or
+          try again in a moment.
         </p>
+        {onRetry ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-3 text-[12px] font-medium text-action hover:underline"
+          >
+            Reload deposit instructions
+          </button>
+        ) : null}
       </div>
     );
   }
 
-  const paymentUri = buildStellarPaymentUri({ destination: account, amount, memo });
+  const paymentUri = buildStellarPaymentUri({
+    destination: trimmedAccount,
+    amount,
+    memo: trimmedMemo,
+  });
 
   return (
     <div className="ramp-deposit-instructions">
       <RampPaymentQr value={paymentUri} />
 
-      <p className="mt-4 text-center text-[13px] font-medium text-ink">
-        Send exactly <span className="font-mono">{amount} XLM</span>
-      </p>
-
-      <div className="mt-4 space-y-3">
-        <div>
-          <p className="text-[12px] text-ink-muted">Deposit address</p>
-          <p className="ramp-mono-break mt-1 text-[12px] text-ink">{account}</p>
-          <RampCopyButton value={account} label="address" className="mt-1" />
+      <div className="mt-5">
+        <div className="ramp-deposit-field">
+          <p className="text-[12px] text-ink-muted">Amount</p>
+          <div className="flex items-start gap-3">
+            <p className="min-w-0 flex-1 text-[13px] font-medium text-ink">
+              <span className="font-mono">{formatXlmDisplay(amount)}</span> XLM
+            </p>
+            <RampCopyButton value={amount.trim()} label="amount" />
+          </div>
         </div>
 
-        {memo ? (
-          <div>
-            <p className="text-[12px] font-medium text-ink">Memo (required)</p>
-            <p className="mt-1 font-mono text-[12px] text-ink">{memo}</p>
-            <RampCopyButton value={memo} label="memo" className="mt-1" />
+        <div className="ramp-deposit-field">
+          <p className="text-[12px] text-ink-muted">Deposit address</p>
+          <div className="flex items-start gap-3">
+            <p className="ramp-mono-break min-w-0 flex-1 text-[12px] text-ink">{trimmedAccount}</p>
+            <RampCopyButton value={trimmedAccount} label="address" />
           </div>
-        ) : null}
+        </div>
+
+        <div className="ramp-deposit-field">
+          <p className="text-[12px] font-medium text-ink">Memo (required)</p>
+          <div className="flex items-start gap-3">
+            <p className="min-w-0 flex-1 break-all font-mono text-[12px] text-ink">{trimmedMemo}</p>
+            <RampCopyButton value={trimmedMemo} label="memo" />
+          </div>
+        </div>
       </div>
 
       {expiresAt ? (
-        <p className="mt-4 text-center text-[12px] text-ink-muted">
+        <p className="mt-6 text-center text-[12px] font-medium text-action">
           Deposit before {formatExpiry(expiresAt)}
         </p>
       ) : null}
