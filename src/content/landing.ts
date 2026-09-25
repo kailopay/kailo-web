@@ -36,6 +36,31 @@ export type SocialLink = {
 export const BRAND_NAME = "KailoPay";
 export const EARLY_ACCESS_URL = "https://calendly.com/kailopay/demo";
 
+/** Nonaktifkan link marketing (footer, nav, demo) sampai halaman siap. */
+export const MARKETING_PLACEHOLDER_LINKS = true;
+
+export function isMarketingLinkEnabled(href: string): boolean {
+  if (!MARKETING_PLACEHOLDER_LINKS) return true;
+  if (!href || href === "#") return false;
+
+  if (href.startsWith("http://") || href.startsWith("https://")) {
+    return false;
+  }
+
+  const pathname = href.split("?")[0] || "/";
+
+  if (pathname === "/") return true;
+  if (pathname === "/individuals" || pathname.startsWith("/individuals/")) return true;
+  if (pathname === "/login" || pathname.startsWith("/login/")) return true;
+  if (pathname === "/register" || pathname.startsWith("/register/")) return true;
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) return true;
+
+  return false;
+}
+
+export const disabledMarketingLinkClass =
+  "cursor-not-allowed opacity-45 pointer-events-none select-none";
+
 export const audienceTabs = [
   { label: "Business", href: "/" },
   { label: "Individuals", href: "/individuals" },

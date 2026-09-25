@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { disabledMarketingLinkClass, isMarketingLinkEnabled } from "@/content/landing";
 import { cn } from "@/lib/cn";
 
 type MarketingButtonProps = {
@@ -8,6 +9,7 @@ type MarketingButtonProps = {
   external?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
+  disabled?: boolean;
 };
 
 const sizeClasses = {
@@ -22,12 +24,26 @@ export function MarketingButton({
   external = false,
   size = "sm",
   className,
+  disabled = false,
 }: MarketingButtonProps) {
   const classes = cn(
     "inline-flex items-center rounded-full bg-action font-semibold text-white transition-colors hover:bg-[#4A4DE0]",
     sizeClasses[size],
     className,
   );
+
+  const isDisabled = disabled || !isMarketingLinkEnabled(href);
+
+  if (isDisabled) {
+    return (
+      <span
+        className={cn(classes, disabledMarketingLinkClass, "hover:bg-action")}
+        aria-disabled="true"
+      >
+        {children}
+      </span>
+    );
+  }
 
   if (external) {
     return (

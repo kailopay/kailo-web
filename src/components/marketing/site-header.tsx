@@ -14,6 +14,7 @@ import { cn } from "@/lib/cn";
 
 import { BrandLogo } from "../ui/brand-logo";
 import { MarketingButton } from "../ui/marketing-button";
+import { MarketingNavLink } from "../ui/marketing-nav-link";
 import { HamburgerIcon } from "../ui/icons";
 import { NavDropdownMenu } from "../ui/nav-dropdown";
 
@@ -29,27 +30,13 @@ function MobileNavSection({
       <div className="py-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted-light">
         {title}
       </div>
-      {links.map((link) =>
-        link.external ? (
-          <a
-            key={link.label}
-            href={link.href}
-            target="_blank"
-            rel="noopener"
-            className="block py-2 pl-3 text-sm font-medium text-ink-body"
-          >
-            {link.label}
-          </a>
-        ) : (
-          <Link
-            key={link.label}
-            href={link.href}
-            className="block py-2 pl-3 text-sm font-medium text-ink-body"
-          >
-            {link.label}
-          </Link>
-        ),
-      )}
+      {links.map((link) => (
+        <MarketingNavLink
+          key={link.label}
+          link={link}
+          className="block py-2 pl-3 text-sm font-medium text-ink-body"
+        />
+      ))}
     </div>
   );
 }
@@ -59,7 +46,20 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   function isAudienceTabActive(href: string) {
-    if (href === "/") return pathname === "/";
+    if (href === "/individuals") {
+      return pathname === href || pathname.startsWith(`${href}/`);
+    }
+
+    if (href === "/") {
+      if (pathname === "/") {
+        return true;
+      }
+      if (pathname === "/login" || pathname === "/register") {
+        return true;
+      }
+      return false;
+    }
+
     return pathname === href || pathname.startsWith(`${href}/`);
   }
 
@@ -91,13 +91,11 @@ export function SiteHeader() {
             <NavDropdownMenu key={dropdown.label} dropdown={dropdown} />
           ))}
           {mainNavLinks.map((link) => (
-            <Link
+            <MarketingNavLink
               key={link.label}
-              href={link.href}
+              link={link}
               className="text-ink-body transition-colors hover:text-ink"
-            >
-              {link.label}
-            </Link>
+            />
           ))}
         </nav>
 
@@ -150,13 +148,11 @@ export function SiteHeader() {
           ))}
 
           {mainNavLinks.map((link) => (
-            <Link
+            <MarketingNavLink
               key={link.label}
-              href={link.href}
+              link={link}
               className="block py-2.5 text-sm font-medium text-ink-body"
-            >
-              {link.label}
-            </Link>
+            />
           ))}
 
           <MobileNavSection

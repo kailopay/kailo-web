@@ -1,8 +1,7 @@
-import Link from "next/link";
-
 import type { NavDropdown, NavLink } from "@/content/landing";
 import { cn } from "@/lib/cn";
 
+import { MarketingNavLink } from "./marketing-nav-link";
 import { ChevronDownIcon } from "./icons";
 
 type NavDropdownMenuProps = {
@@ -13,19 +12,7 @@ function NavLinkItem({ link }: { link: NavLink }) {
   const className =
     "block rounded-xl px-3.5 py-2.5 text-[14px] font-medium text-ink-body transition-colors hover:bg-paper-warm hover:text-ink";
 
-  if (link.external) {
-    return (
-      <a href={link.href} target="_blank" rel="noopener" className={className}>
-        {link.label}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={link.href} className={className}>
-      {link.label}
-    </Link>
-  );
+  return <MarketingNavLink link={link} className={className} />;
 }
 
 export function NavDropdownMenu({ dropdown }: NavDropdownMenuProps) {

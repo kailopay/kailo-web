@@ -1,8 +1,8 @@
-import Link from "next/link";
-
-import { footerColumns, socialLinks } from "@/content/landing";
+import { footerColumns, socialLinks, disabledMarketingLinkClass, isMarketingLinkEnabled } from "@/content/landing";
+import { cn } from "@/lib/cn";
 
 import { BrandLogo } from "../ui/brand-logo";
+import { MarketingNavLink } from "../ui/marketing-nav-link";
 
 function SocialIcon({ icon }: { icon: (typeof socialLinks)[number]["icon"] }) {
   switch (icon) {
@@ -49,15 +49,12 @@ export function SiteFooter() {
             Indonesia-first on-ramp and off-ramp infrastructure for Stellar
           </p>
           <div className="flex flex-wrap gap-2.5">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener"
-                aria-label={social.label}
-                className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/[0.06] text-ink-muted transition-colors hover:bg-white/[0.13] hover:text-white"
-              >
+            {socialLinks.map((social) => {
+              const enabled = isMarketingLinkEnabled(social.href);
+              const className =
+                "flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/[0.06] text-ink-muted transition-colors hover:bg-white/[0.13] hover:text-white";
+
+              const icon = (
                 <svg
                   width="15"
                   height="15"
@@ -67,8 +64,34 @@ export function SiteFooter() {
                 >
                   <SocialIcon icon={social.icon} />
                 </svg>
-              </a>
-            ))}
+              );
+
+              if (!enabled) {
+                return (
+                  <span
+                    key={social.label}
+                    aria-label={social.label}
+                    aria-disabled="true"
+                    className={cn(className, disabledMarketingLinkClass, "hover:bg-white/[0.06] hover:text-ink-muted")}
+                  >
+                    {icon}
+                  </span>
+                );
+              }
+
+              return (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={social.label}
+                  className={className}
+                >
+                  {icon}
+                </a>
+              );
+            })}
           </div>
         </div>
 
@@ -79,27 +102,13 @@ export function SiteFooter() {
                 {column.title}
               </div>
               <div className="flex flex-col gap-[11px] text-[13px]">
-                {column.links.map((link) =>
-                  link.external ? (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener"
-                      className="text-ink-footer transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      className="text-ink-footer transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </Link>
-                  ),
-                )}
+                {column.links.map((link) => (
+                  <MarketingNavLink
+                    key={link.label}
+                    link={link}
+                    className="text-ink-footer transition-colors hover:text-white"
+                  />
+                ))}
               </div>
             </div>
           ))}
