@@ -4,7 +4,6 @@ import {
   CircleUser,
   KeyRound,
   LayoutDashboard,
-  LineChart,
   ListOrdered,
   RefreshCw,
   Wallet,
@@ -23,11 +22,6 @@ export const dashboardNav: DashboardNavItem[] = [
     title: "Overview",
     url: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Analytics",
-    url: "/dashboard/developers/analytics",
-    icon: LineChart,
   },
   {
     title: "Orders",
@@ -77,7 +71,6 @@ export function getDashboardNav(_environment: Organization["environment"]) {
 const pageTitles: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/developers": "Overview",
-  "/dashboard/developers/analytics": "Analytics",
   "/dashboard/developers/orders": "Orders",
   "/dashboard/developers/revenue": "Revenue",
   "/dashboard/developers/wallets": "Wallets",
