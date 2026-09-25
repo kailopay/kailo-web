@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VerifyEmailCard } from "@/components/auth/verify-email-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -63,6 +63,10 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
   const [googleAvailable, setGoogleAvailable] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
 
+  const googleAuthResolvedRef = useRef(false);
+  const googlePopupRef = useRef<Window | null>(null);
+  const googlePopupPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const authLocked = submitting || googleBusy;
 
   useEffect(() => {
@@ -73,27 +77,50 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
     void isGoogleLoginAvailable().then(setGoogleAvailable);
   }, []);
 
-  useEffect(() => {
-    function onGoogleMessage(event: MessageEvent) {
-      if (event.origin !== window.location.origin) return;
-      if (!isGoogleAuthPopupMessage(event.data)) return;
+  const stopGooglePopupWatch = useCallback(() => {
+    if (googlePopupPollRef.current) {
+      clearInterval(googlePopupPollRef.current);
+      googlePopupPollRef.current = null;
+    }
+    googlePopupRef.current = null;
+  }, []);
 
-      setGoogleBusy(false);
-      if (!event.data.ok) {
+  const finishGoogleLogin = useCallback(
+    async (ok: boolean) => {
+      if (googleAuthResolvedRef.current) return;
+      googleAuthResolvedRef.current = true;
+      stopGooglePopupWatch();
+
+      if (!ok) {
+        setGoogleBusy(false);
         setError("Google sign-in was cancelled or could not be completed.");
         return;
       }
 
-      void getMe()
-        .then((user) => finishSession(user, nextPath))
-        .catch((caught) => {
-          setError(formatAuthError(caught, "login"));
-        });
+      try {
+        const user = await getMe();
+        await finishSession(user, nextPath);
+      } catch (caught) {
+        setGoogleBusy(false);
+        setError(formatAuthError(caught, "login"));
+      }
+    },
+    [nextPath, stopGooglePopupWatch],
+  );
+
+  useEffect(() => {
+    function onGoogleMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (!isGoogleAuthPopupMessage(event.data)) return;
+      void finishGoogleLogin(event.data.ok);
     }
 
     window.addEventListener("message", onGoogleMessage);
-    return () => window.removeEventListener("message", onGoogleMessage);
-  }, [nextPath]);
+    return () => {
+      window.removeEventListener("message", onGoogleMessage);
+      stopGooglePopupWatch();
+    };
+  }, [finishGoogleLogin, stopGooglePopupWatch]);
 
   function switchTab(nextTab: AuthTab) {
     setTab(nextTab);
@@ -140,13 +167,48 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
   }
 
   function handleGoogleLogin() {
+    if (googleBusy) return;
+
     const popup = openGoogleLoginPopup();
     if (!popup) {
       setError("Allow pop-ups in your browser to sign in with Google.");
       return;
     }
-    setGoogleBusy(true);
+
+    googleAuthResolvedRef.current = false;
     setError(null);
+    setGoogleBusy(true);
+    googlePopupRef.current = popup;
+
+    googlePopupPollRef.current = setInterval(() => {
+      const activePopup = googlePopupRef.current;
+      if (!activePopup) return;
+
+      if (activePopup.closed) {
+        void getMe()
+          .then((session) => {
+            if (googleAuthResolvedRef.current) return;
+            void finishGoogleLogin(session.email_verified);
+          })
+          .catch(() => {
+            if (!googleAuthResolvedRef.current) {
+              void finishGoogleLogin(false);
+            }
+          });
+        return;
+      }
+
+      void getMe()
+        .then((session) => {
+          if (googleAuthResolvedRef.current) return;
+          if (!session.email_verified) return;
+          activePopup.close();
+          void finishGoogleLogin(true);
+        })
+        .catch(() => {
+          // Session not ready yet; keep polling until the popup closes.
+        });
+    }, 400);
   }
 
   if (unverifiedEmail) {
@@ -215,7 +277,13 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
           type="submit"
           size="md"
           loading={authLocked}
-          loadingLabel={googleBusy ? "Signing in with Google..." : "Please wait..."}
+          loadingLabel={
+            googleBusy
+              ? "Signing in with Google..."
+              : submitting
+                ? "Please wait..."
+                : undefined
+          }
         >
           {tab === "login" ? "Sign in" : "Create account"}
         </PrimaryButton>
@@ -225,7 +293,7 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
         <button
           type="button"
           onClick={() => router.push("/auth/forgot-password")}
-          disabled={googleBusy}
+          disabled={authLocked}
           className="mt-3 text-[13px] font-medium text-action hover:underline disabled:cursor-not-allowed disabled:opacity-50"
         >
           Forgot password?
@@ -233,16 +301,26 @@ export function DeveloperAuthForm({ defaultTab, nextPath }: DeveloperAuthFormPro
       ) : null}
 
       {googleAvailable ? (
-        <SecondaryButton
-          className="mt-4"
-          onClick={handleGoogleLogin}
-          loading={googleBusy}
-          loadingLabel="Signing in with Google..."
-          disabled={submitting}
-        >
-          <img src="/marketing/google.svg" alt="" width={18} height={18} />
-          Continue with Google
-        </SecondaryButton>
+        <>
+          <SecondaryButton
+            className="mt-4"
+            onClick={handleGoogleLogin}
+            loading={googleBusy}
+            loadingLabel="Signing in with Google..."
+            disabled={submitting}
+          >
+            <img src="/marketing/google.svg" alt="" width={18} height={18} />
+            Continue with Google
+          </SecondaryButton>
+          {googleBusy ? (
+            <p className="ramp-step-loading mt-3" role="status" aria-live="polite">
+              <span className="ramp-step-loading__spinner" aria-hidden="true" />
+              <span className="ramp-step-loading__message">
+                Complete sign-in in the Google window, or wait while we redirect you.
+              </span>
+            </p>
+          ) : null}
+        </>
       ) : null}
     </div>
   );

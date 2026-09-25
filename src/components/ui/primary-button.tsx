@@ -37,7 +37,7 @@ export function PrimaryButton({
   onClick,
 }: PrimaryButtonProps) {
   const isDisabled = disabled || loading;
-  const label = loading ? (loadingLabel ?? children) : children;
+  const loadingText = loadingLabel ?? children;
 
   const classes = cn(
     "primary-button inline-flex items-center justify-center rounded-full bg-action text-center font-semibold text-white transition-[opacity,background-color] hover:bg-[#4A4DE0]",
@@ -55,7 +55,17 @@ export function PrimaryButton({
         className={cn(classes, isDisabled && "pointer-events-none opacity-45")}
         aria-disabled={isDisabled}
       >
-        {label}
+        {loading ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <span
+              className="ramp-step-loading__spinner primary-button__spinner"
+              aria-hidden="true"
+            />
+            <span>{loadingText}</span>
+          </span>
+        ) : (
+          children
+        )}
       </a>
     );
   }
@@ -68,7 +78,14 @@ export function PrimaryButton({
       className={classes}
       aria-busy={loading}
     >
-      {label}
+      {loading ? (
+        <span className="inline-flex items-center justify-center gap-2">
+          <span className="ramp-step-loading__spinner primary-button__spinner" aria-hidden="true" />
+          <span>{loadingText}</span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }

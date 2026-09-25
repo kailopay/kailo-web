@@ -37,7 +37,7 @@ export function SecondaryButton({
   onClick,
 }: SecondaryButtonProps) {
   const isDisabled = disabled || loading;
-  const label = loading ? (loadingLabel ?? children) : children;
+  const loadingText = loadingLabel ?? children;
 
   const classes = cn(
     "secondary-button",
@@ -55,7 +55,14 @@ export function SecondaryButton({
         className={cn(classes, isDisabled && "secondary-button--disabled")}
         aria-disabled={isDisabled}
       >
-        {label}
+        {loading ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <span className="ramp-step-loading__spinner" aria-hidden="true" />
+            <span>{loadingText}</span>
+          </span>
+        ) : (
+          children
+        )}
       </a>
     );
   }
@@ -68,7 +75,14 @@ export function SecondaryButton({
       className={classes}
       aria-busy={loading}
     >
-      {label}
+      {loading ? (
+        <span className="inline-flex items-center justify-center gap-2">
+          <span className="ramp-step-loading__spinner" aria-hidden="true" />
+          <span>{loadingText}</span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }
