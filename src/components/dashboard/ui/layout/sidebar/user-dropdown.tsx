@@ -2,9 +2,8 @@
 
 import { useDashboardShell } from "@/components/dashboard/ui/layout/dashboard-shell-context";
 import { Icon, Popover } from "@dub/ui";
-import { Gear } from "@dub/ui/icons";
 import { cn } from "@dub/utils";
-import { LogOut } from "lucide-react";
+import { CircleUser, LogOut } from "lucide-react";
 import { signOutAndRedirect } from "@/lib/kailopay/auth";
 import Link from "next/link";
 import {
@@ -35,9 +34,9 @@ export function UserDropdown() {
   const menuOptions = useMemo(
     () => [
       {
-        label: "Business settings",
-        icon: Gear,
-        href: "/dashboard/settings/business",
+        label: "Profile",
+        icon: CircleUser,
+        href: "/dashboard/settings/profile",
         onClick: () => setOpenPopover(false),
       },
       {
