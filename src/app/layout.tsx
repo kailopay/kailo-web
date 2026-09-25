@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
+import { NProgressBar } from "@/components/navigation/nprogress-bar";
 import { BRAND_NAME } from "@/content/landing";
+
+import "./nprogress.css";
 
 const pageTitle = `IDR On-Ramp and Off-Ramp for Stellar | ${BRAND_NAME}`;
 const pageDescription =
@@ -67,7 +71,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
       </head>
-      <body>{children}</body>
+      <body>
+        <Suspense fallback={null}>
+          <NProgressBar />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }
