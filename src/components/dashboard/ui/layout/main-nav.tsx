@@ -96,7 +96,7 @@ export function MainNav({
             "lg:h-[calc(100dvh-var(--dashboard-top-banner-height))] lg:top-[var(--dashboard-top-banner-height)]",
         )}
       >
-        <div className="h-full w-min max-w-full bg-neutral-200">
+        <div className="h-full w-min max-w-full bg-primary">
           <Sidebar />
         </div>
       </div>
@@ -117,7 +117,7 @@ export function MainNav({
         >
           <div
             className={cn(
-              "relative h-full w-min max-w-[85vw] bg-neutral-200",
+              "relative h-full w-min max-w-[85vw] bg-primary",
               hasTopBanner
                 ? "h-[calc(100dvh-var(--dashboard-top-banner-height))]"
                 : "h-dvh",

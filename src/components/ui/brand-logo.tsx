@@ -8,18 +8,16 @@ type BrandLogoProps = {
   className?: string;
 };
 
-export function BrandLogo({ className }: BrandLogoProps) {
+export function BrandLogo({ variant = "dark", className }: BrandLogoProps) {
+  const src = variant === "light" ? "/logo-dark.png" : "/logo-full.png";
+
   return (
     <Link
       href="/"
       aria-label={`${BRAND_NAME} home`}
       className={cn("flex flex-none items-center", className)}
     >
-      <img
-        src="/logo-full.png"
-        alt={BRAND_NAME}
-        className="block h-[38px] w-auto"
-      />
+      <img src={src} alt={BRAND_NAME} className="block h-[38px] w-auto" />
     </Link>
   );
 }

@@ -8,8 +8,8 @@ import {
   Gauge6,
   InvoiceDollar,
   Key,
+  ListOrdered,
   MoneyBill2,
-  Refresh2,
   User,
   Webhook,
 } from "./icons";
@@ -80,12 +80,6 @@ function getMainNavItems(): NavItemType[] {
       name: "Overview",
       icon: Gauge6,
       href: "/dashboard",
-      isActive: (pathname, href) => isNavItemActive(pathname, href),
-    },
-    {
-      name: "Analytics",
-      icon: Refresh2,
-      href: "/dashboard/developers/analytics",
       isActive: (pathname, href) => isNavItemActive(pathname, href),
     },
     {
